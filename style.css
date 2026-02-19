@@ -1,0 +1,694 @@
+:root {
+    --primary-bg: #0a0a0a;
+    --card-bg: #1a1a1a;
+    --accent-color: #d4af37; /* Gold */
+    --text-light: #ffffff;
+    --text-dim: #b0b0b0;
+    --btn-bg: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #121212;
+    color: var(--text-light);
+    overflow-x: hidden;
+}
+
+/* --- MASTER HEADER --- */
+header {
+    background-color: var(--primary-bg);
+    padding: 20px 50px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    height: 50px; width: 50px;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    transition: 0.5s;
+}
+
+.company-name {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    letter-spacing: 3px;
+}
+
+.accent { color: var(--accent-color); }
+
+.header-nav { display: flex; gap: 10px; }
+
+.nav-btn {
+    display: flex; align-items: center;
+    padding: 10px 15px;
+    background-color: var(--btn-bg);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 13px;
+    transition: all 0.4s ease;
+}
+
+.nav-btn span {
+    max-width: 0; overflow: hidden; opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.nav-btn:hover span, .nav-btn.active span {
+    max-width: 100px; margin-left: 8px; opacity: 1;
+}
+
+.nav-btn:hover, .nav-btn.active {
+    background-color: var(--accent-color);
+    color: black;
+}
+
+.contact-special { background-color: var(--accent-color); color: black; }
+
+/* --- HOME HERO SECTION --- */
+.hero {
+    height: 90vh;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1500');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    margin: 15px 0;
+}
+
+.sub-title {
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.hero-btns {
+    margin-top: 30px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.main-btn, .outline-btn {
+    padding: 15px 35px;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.main-btn { background: var(--accent-color); color: black; }
+.outline-btn { border: 1px solid white; color: white; }
+.outline-btn:hover { background: white; color: black; }
+
+/* --- SHARED CONTENT STYLING --- */
+.home-intro { padding: 80px 20px; text-align: center; }
+.content-box { max-width: 800px; margin: 0 auto; }
+.content-box h2 { font-family: 'Cinzel', serif; font-size: 2.5rem; margin-bottom: 20px; }
+.content-box p { color: var(--text-dim); line-height: 1.8; font-size: 1.1rem; }
+
+/* Services Section */
+.services-section {
+    padding: 80px 20px;
+    text-align: center;
+    background-color: #0a0a0a;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.service-card {
+    background: #1a1a1a;
+    padding: 40px;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    transition: 0.3s;
+}
+
+.service-card:hover {
+    border-color: #d4af37;
+    transform: translateY(-10px);
+}
+
+.service-card i {
+    font-size: 2.5rem;
+    color: #d4af37;
+    margin-bottom: 20px;
+}
+
+.service-card h3 {
+    font-family: 'Cinzel', serif;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 100px 20px;
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('hero-bg.jpg'); /* Use your kitchen image here */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    text-align: center;
+}
+
+.gold-btn {
+    display: inline-block;
+    padding: 15px 35px;
+    background: #d4af37;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 25px;
+    transition: 0.3s;
+}
+
+.gold-btn:hover {
+    background: #fff;
+}
+------------------------------------------------------About page -----------------------------------------------------
+/* General Resets */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fcfcfc;
+}
+
+/* Hero Section */
+.about-hero {
+    height: 60vh;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                url('https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&q=80&w=1200');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    background-attachment: scroll;
+    position: relative;
+}
+
+.hero-content h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Our Story Section */
+.story-container {
+    max-width: 1100px;
+    margin: 80px auto;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    padding: 0 20px;
+}
+
+.story-text {
+    flex: 1;
+}
+
+.story-text span {
+    color: #d4a373; /* Gold/Bronze accent color */
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.story-text h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.story-image {
+    flex: 1;
+}
+
+.story-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 20px 20px 0px #faedcd; /* Modern offset shadow */
+}
+
+/* Values Grid */
+.values {
+    background-color: #f8f9fa;
+    padding: 80px 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.value-card {
+    background: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-10px);
+}
+
+.value-card h3 {
+    margin-bottom: 15px;
+    color: #d4a373;
+}
+
+/* Call to Action */
+.cta {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.cta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background-color: #333;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #d4a373;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .story-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+}
+
+.cta {
+    padding: 60px 20px;
+    text-align: center;
+    background: #000;
+    border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.cta h2 {
+    font-family: 'Cinzel', serif;
+    color: #fff;
+    margin-bottom: 25px;
+}
+
+.btn {
+    background: #d4af37; /* Gold color */
+    color: #000;
+    padding: 15px 40px;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn:hover {
+    background: #fff;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+------------------------------------------------------About page -----------------------------------------------------
+
+
+------------------------------------------------------Contact page -----------------------------------------------------
+/* Contact Section Styles */
+.contact-section {
+    padding: 100px 50px;
+    background-color: #121212;
+    color: white;
+}
+
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 80px;
+    align-items: start;
+}
+
+.sub-title {
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.contact-info h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 30px;
+}
+
+.contact-info p {
+    color: #b0b0b0;
+    margin-bottom: 40px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.info-item i {
+    font-size: 24px;
+    color: var(--accent-color);
+    width: 30px;
+}
+
+.info-item h4 {
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+.info-item p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+/* Form Styling */
+.contact-form-wrapper {
+    background: #1a1a1a;
+    padding: 50px;
+    border-radius: 15px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.form-group, .form-row {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.contact-form input, 
+.contact-form select, 
+.contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    background: #252525;
+    border: 1px solid #333;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.contact-form input:focus, 
+.contact-form textarea:focus {
+    border-color: var(--accent-color);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background-color: var(--accent-color);
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #c49b2f;
+    transform: translateY(-3px);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+    
+    .contact-info h2 {
+        font-size: 2.2rem;
+    }
+}
+
+
+------------------------------------------------------Contact page -----------------------------------------------------
+
+------------------------------------------------------Menu page -----------------------------------------------------
+
+/* Menu Hero */
+.menu-hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1200');
+    background-size: cover;
+    background-position: center;
+}
+
+.section-title {
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 40px;
+}
+
+.search-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 30px;
+    padding: 5px 20px;
+    transition: 0.3s;
+}
+
+.search-box:focus-within {
+    border-color: #d4af37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.search-box i {
+    color: #d4af37;
+    margin-right: 15px;
+}
+
+.search-box input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 12px 0;
+    font-size: 16px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.search-box input::placeholder {
+    color: #666;
+}
+
+.section-title h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+}
+
+/* Signature Menu Layout */
+.menu-categories {
+    max-width: 1100px;
+    margin: 0 auto 100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    padding: 0 20px;
+}
+
+.category h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--accent-color);
+    border-bottom: 1px solid var(--accent-color);
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.menu-item {
+    margin-bottom: 30px;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.price {
+    color: var(--accent-color);
+}
+
+.menu-item p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .menu-categories {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Table Container */
+.inventory-grid {
+    max-width: 1000px;
+    margin: 40px auto;
+    overflow-x: auto; /* Allows scrolling on small phones */
+    padding: 20px;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1a1a1a;
+    color: white;
+    border-radius: 12px;
+    overflow: hidden; /* Rounds the corners of the table */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.inventory-table thead {
+    background-color: #000;
+    font-family: 'Cinzel', serif;
+    color: #d4af37;
+    text-transform: uppercase;
+}
+
+.inventory-table th, 
+.inventory-table td {
+    padding: 18px 25px;
+    text-align: left;
+    border-bottom: 1px solid #222;
+}
+
+.item-name {
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* Row Hover Effect */
+.inventory-table tbody tr:hover {
+    background-color: #222;
+    transition: 0.3s;
+}
+
+/* Progress Bar in Table */
+.table-progress-bg {
+    background: #333;
+    height: 6px;
+    width: 150px;
+    border-radius: 10px;
+}
+
+.table-progress-fill {
+    background: #d4af37;
+    height: 100%;
+    border-radius: 10px;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.badge-gold { background: rgba(212, 175, 55, 0.2); color: #d4af37; border: 1px solid #d4af37; }
+.badge-red { background: rgba(255, 77, 77, 0.2); color: #ff4d4d; border: 1px solid #ff4d4d; }
+
+/* Out of Stock Row Styling */
+.row-out { opacity: 0.6; }
+.row-out .table-progress-fill { background: #ff4d4d; }
+
+------------------------------------------------------Menu page -----------------------------------------------------

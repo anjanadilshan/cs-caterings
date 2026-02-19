@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items | CS Catering</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    
+
+<header>
+    <nav class="header-container">
+        <div class="left"><div class="logo-wrapper"><img src="logo.png" alt="CS Logo" class="logo"></div></div>
+        <div class="center"><span class="company-name">CS <span class="accent">CATERING</span></span></div>
+        <div class="header-nav">
+            <a href="CS.html" class="nav-btn"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="about.html" class="nav-btn"><i class="fa-solid fa-circle-info"></i><span>About</span></a>
+            <a href="menu.html" class="nav-btn active"><i class="fa-solid fa-utensils"></i><span>Items</span></a>
+            <a href="contact.html" class="nav-btn"><i class="fa-solid fa-envelope"></i><span>Contact</span></a>
+        </div>
+    </nav>
+</header>
+
+<section class="menu-hero">
+    <h1>OUR <span class="accent">ITEMS</span></h1>
+</section>
+
+<section class="inventory-section">
+    <div class="content-box">
+        <span class="sub-title">Today CATERING items Live Updates</span>
+        <h2>Today's <span class="accent">Availability</span></h2>
+    </div>
+    <div class="search-container">
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="menuSearch" placeholder="Search for Items" onkeyup="filterTable()">
+    </div>
+</div>
+    <div id="inventory-grid" class="inventory-grid">
+        <p>Loading fresh data...</p>
+    </div>
+</section>
+
+
+
+<div id="inventory-grid" class="inventory-grid">
+    </div>
+
+
+
+<section class="signature-menu">
+    <div class="section-title">
+        <span class="sub-title">Catering Packages</span>
+        <h2>Signature <span class="accent">Selections</span></h2>
+    </div>
+
+    <div class="menu-categories">
+    <div class="category">
+        <h3>Traditional Short Eats</h3>
+        <div class="menu-item">
+            <div class="item-header"><span>Mutton Elu Mas Rolls</span><span class="price">LKR 1,200</span></div>
+            <p>Spicy slow-cooked mutton wrapped in a crispy pancake crust.</p>
+        </div>
+        <div class="menu-item">
+            <div class="item-header"><span>Ceylon Fish Cutlets</span><span class="price">LKR 950</span></div>
+            <p>Golden fried spheres of spiced mackerel and tempered potatoes.</p>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>Signature Mains</h3>
+        <div class="menu-item">
+            <div class="item-header"><span>Fragrant Yellow Rice Feast</span><span class="price">LKR 2,400</span></div>
+            <p>Ghee-tempered samba rice served with Cashew Curry and Brinjal Moju.</p>
+        </div>
+        <div class="menu-item">
+            <div class="item-header"><span>Black Pork Curry (Negombo Style)</span><span class="price">LKR 1,800</span></div>
+            <p>Slow-roasted pork in a dark, roasted spice blend (Goraka base).</p>
+        </div>
+    </div>
+
+    <div class="category">
+        <h3>Live Action Stations</h3>
+        <div class="menu-item">
+            <div class="item-header"><span>Egg Hopper (Aappa) Duo</span><span class="price">LKR 1,100</span></div>
+            <p>Served with spicy Lunu Miris and Seeni Sambol.</p>
+        </div>
+        <div class="menu-item">
+            <div class="item-header"><span>Kottu Roti Symphony</span><span class="price">LKR 1,500</span></div>
+            <p>Hand-chopped roti with farm-fresh eggs, vegetables, and chicken gravy.</p>
+        </div>
+    </div>
+</div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>

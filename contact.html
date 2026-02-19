@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | CS Catering</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // Replace 'YOUR_PUBLIC_KEY' with your actual Public Key from EmailJS Account
+          emailjs.init("YOUR_PUBLIC_KEY");
+       })();
+    </script>
+</head>
+
+<body>
+    <header>
+        <nav class="header-container">
+            <div class="left">
+                <div class="logo-wrapper">
+                    <img src="logo.png" alt="CS Logo" class="logo">
+                </div>
+            </div>
+            <div class="center">
+                <span class="company-name">CS <span class="accent">CATERING</span></span>
+            </div>
+            <div class="header-nav">
+                <a href="CS.html" class="nav-btn"><i class="fa-solid fa-house"></i><span>Home</span></a>
+                <a href="about.html" class="nav-btn"><i class="fa-solid fa-circle-info"></i><span>About</span></a>
+                <a href="menu.html" class="nav-btn"><i class="fa-solid fa-utensils"></i><span>Items</span></a>
+                <a href="contact.html" class="nav-btn active"><i class="fa-solid fa-envelope"></i><span>Contact</span></a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="contact-section">
+        <div class="contact-container">
+            <div class="contact-info">
+                <span class="sub-title">Get in Touch</span>
+                <h2>Let’s Plan Your <span class="accent">Next Event</span></h2>
+                <p>From intimate dinners to grand weddings, we are here to bring your culinary vision to life.</p>
+                
+                <div class="info-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <div>
+                        <h4>Location</h4>
+                        <p>Bandarawela road, Pin arawa, Badulla</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>+94 77 229 2073</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <div>
+                        <h4>Email</h4>
+                        <p>ranawakaranjith@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-wrapper">
+                <form class="contact-form" id="catering-contact-form">
+                    <div class="form-group">
+                        <input type="text" name="customer_name" id="customer_name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-row">
+    <input type="email" name="customer_email" id="customer_email" placeholder="Email Address" required>
+    <input type="number" name="customer_Phone_Number" id="customer_Phone_Number" placeholder="Phone Number" required>
+</div>
+                    <div class="form-row">
+                        <input type="text" name="event_date" id="event_date" placeholder="Event Date (DD/MM/YY)">
+                        <input type="number" name="guest_count" id="guest_count" placeholder="Guest Count">
+                    </div>
+                    <div class="form-group">
+                        <select name="event_type" id="event_type">
+                            <option value="" disabled selected>Event Type</option>
+                            <option value="wedding">Wedding</option>
+                            <option value="corporate">Corporate</option>
+                            <option value="private">Private Party</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" id="message" placeholder="Tell us about your event..." rows="5"></textarea>
+                    </div>
+                    <button type="submit" id="submit-btn" class="submit-btn">Send Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
