@@ -21,9 +21,7 @@
 
         if (!user) {
             if (adminSignInLink) {
-                adminSignInLink.href = 'user-login/admin/admin-login.html';
-                adminSignInLink.textContent = 'Admin sign in';
-                adminSignInLink.hidden = false;
+                adminSignInLink.hidden = true;
             }
             return;
         }
