@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17211d">
+    <title>Cleaning Store | CS Catering</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="store.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="store-page">
+    <header>
+        <nav class="header-container">
+            <div class="left"><a href="CS.html" class="company-name store-brand">CS <span class="accent">CATERING</span></a></div>
+            <div class="header-nav">
+                <a href="CS.html" class="nav-btn" aria-label="Home" title="Home"><i class="fa-solid fa-house"></i><span>Home</span></a>
+                <a href="menu.html" class="nav-btn" aria-label="Rental items" title="Rental items"><i class="fa-solid fa-boxes-stacked"></i><span>Rentals</span></a>
+                <a href="store.html" class="nav-btn active" aria-label="Store" title="Store"><i class="fa-solid fa-store"></i><span>Store</span></a>
+                <a href="user-login/login.html" class="nav-btn" aria-label="Account" title="Account"><i class="fa-solid fa-user"></i><span>Account</span></a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="store-banner">
+            <div class="store-banner-inner">
+                <p class="store-kicker">CS HOME CARE</p>
+                <h1>Cleaning essentials,<br><span>ready for your home.</span></h1>
+                <p>Browse our available cleaning products and place an order directly with our team.</p>
+                <a href="#products" class="store-shop-link">Shop products <i class="fa-solid fa-arrow-down"></i></a>
+            </div>
+        </section>
+
+        <section id="products" class="store-content">
+            <div class="store-toolbar">
+                <div>
+                    <p class="store-kicker">THE STORE</p>
+                    <h2>Cleaning products</h2>
+                </div>
+                <div class="store-actions">
+                    <label class="store-search" for="store-search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input id="store-search" type="search" placeholder="Search products" autocomplete="off">
+                    </label>
+                    <button id="open-cart" class="cart-button" type="button" aria-label="Open basket" title="Open basket" aria-haspopup="dialog" aria-controls="cart-dialog">
+                        <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
+                        <span>Basket</span>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+            <p id="store-status" class="store-status" role="status" aria-live="polite">Loading products...</p>
+            <div id="store-product-grid" class="store-product-grid"></div>
+        </section>
+    </main>
+
+    <footer class="store-footer">
+        <span>CS HOME CARE</span>
+        <a href="user-login/admin/admin-login.html">Admin sign in</a>
+    </footer>
+
+    <dialog id="cart-dialog" class="cart-dialog" aria-labelledby="cart-heading">
+        <div class="cart-heading">
+            <div>
+                <p class="store-kicker">YOUR ORDER</p>
+                <h2 id="cart-heading">Basket</h2>
+            </div>
+            <button id="close-cart" class="close-cart" type="button" aria-label="Close basket"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-bottom">
+            <p class="cart-total"><span>Subtotal</span><strong id="cart-total">LKR 0.00</strong></p>
+            <button id="checkout-button" class="checkout-button" type="button" disabled>
+                Order via WhatsApp <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+            </button>
+            <p class="checkout-note">Your order will be confirmed by our team on WhatsApp.</p>
+        </div>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="store.js"></script>
+</body>
+</html>

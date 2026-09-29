@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sign In | CS Catering</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="admin-page">
+    <header>
+        <nav class="header-container">
+            <a class="company-name admin-brand" href="../../CS.html">CS <span class="accent">CATERING</span></a>
+            <div class="admin-nav-links">
+                <a class="nav-btn" href="../../menu.html">Rental items</a>
+                <a class="nav-btn" href="../../store.html">Cleaning store</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-shell">
+        <div class="admin-heading">
+            <div>
+                <p class="admin-eyebrow">CATALOG MANAGEMENT</p>
+                <h1>Admin sign in</h1>
+                <p>Sign in with an approved administrator account.</p>
+            </div>
+        </div>
+        <section class="admin-panel auth-panel">
+            <form id="admin-login-form" class="admin-form">
+                <label for="admin-email">Email</label>
+                <input id="admin-email" type="email" autocomplete="username" required>
+                <label for="admin-password">Password</label>
+                <input id="admin-password" type="password" autocomplete="current-password" required>
+                <button id="login-button" class="admin-primary" type="submit">Sign in</button>
+            </form>
+            <p id="admin-login-status" class="admin-status" role="status" aria-live="polite"></p>
+            <p class="auth-switch">Need an admin account? <a href="admin-register.html">Register</a></p>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../supabase-client.js"></script>
+    <script src="admin-login.js"></script>
+</body>
+</html>

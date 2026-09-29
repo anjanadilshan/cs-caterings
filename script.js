@@ -1,152 +1,123 @@
-const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZl-eBozriU22GpYseBbjd7NnEfXZdSe1QDfFgT_mzICfMfUf-JQTuq6EOKygKNeHV9IiIAcHnd7JO/pub?output=csv';
+const { url: SUPABASE_URL, key: SUPABASE_ANON_KEY } = window.csSupabaseConfig;
 
 async function fetchInventory() {
     const container = document.getElementById('inventory-grid');
     if (!container) return;
 
+    if (SUPABASE_URL.startsWith('YOUR_') || SUPABASE_ANON_KEY.startsWith('YOUR_')) {
+        container.innerHTML = '<p class="error-msg">Connect Supabase by adding your project URL and publishable key in script.js.</p>';
+        return;
+    }
+
     try {
-        const response = await fetch(`${sheetURL}&cachebust=${new Date().getTime()}`);
-        const data = await response.text();
-        const rows = data.split(/\r?\n/).slice(1); 
-        
-        // Table Header
-        let tableHTML = `
-            <table class="inventory-table">
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Availability</th>
-                        <th>Stock Level</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/inventory?select=name,description,total,available,image_path,is_active&is_active=eq.true&order=name.asc`,
+            { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
+        );
+        if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
+        const items = await response.json();
 
-        rows.forEach(row => {
-            const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (columns.length >= 3) {
-                const name = columns[0].trim();
-                const total = parseInt(columns[1]) || 0;
-                const available = parseInt(columns[2]) || 0;
-                const percentage = total > 0 ? (available / total) * 100 : 0;
-                const isOutOfStock = available <= 0;
+        if (!items.length) {
+            container.innerHTML = '<p>No inventory items yet.</p>';
+            return;
+        }
 
-                if (!name) return;
+        const cards = items.map(item => {
+            const total = Number(item.total) || 0;
+            const available = Number(item.available) || 0;
+            const out = available <= 0;
+            const card = document.createElement('article');
+            card.className = 'menu-product-card';
 
-                tableHTML += `
-                    <tr class="${isOutOfStock ? 'row-out' : ''}">
-                        <td class="item-name">${name}</td>
-                        <td>${available} / ${total}</td>
-                        <td>
-                            <div class="table-progress-bg">
-                                <div class="table-progress-fill" style="width: ${percentage}%"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="status-badge ${isOutOfStock ? 'badge-red' : 'badge-gold'}">
-                                ${isOutOfStock ? '❌ Rent Out' : '✅ In Stock'}
-                            </span>
-                        </td>
-                    </tr>
-                `;
+            if (item.image_path && window.csSupabase) {
+                const image = document.createElement('img');
+                image.className = 'menu-product-image';
+                image.src = window.csSupabase.storage.from('rental-items').getPublicUrl(item.image_path).data.publicUrl;
+                image.alt = item.name;
+                image.loading = 'lazy';
+                card.append(image);
+            } else {
+                const imagePlaceholder = document.createElement('div');
+                imagePlaceholder.className = 'menu-product-image menu-product-image-placeholder';
+                imagePlaceholder.setAttribute('aria-hidden', 'true');
+                card.append(imagePlaceholder);
             }
+
+            const details = document.createElement('div');
+            details.className = 'menu-product-details';
+            const name = document.createElement('h3');
+            name.className = 'menu-product-name';
+            name.textContent = item.name;
+            const description = document.createElement('p');
+            description.className = 'menu-product-description';
+            description.textContent = item.description || 'Cleaning product';
+            const footer = document.createElement('div');
+            footer.className = 'menu-product-footer';
+            const stock = document.createElement('span');
+            stock.className = `menu-product-stock ${out ? 'out' : ''}`;
+            stock.textContent = `${available} available now / ${total} total`;
+            footer.append(stock);
+            details.append(name, description, footer);
+            card.append(details);
+            return card;
         });
-
-        tableHTML += `</tbody></table>`;
-        container.innerHTML = tableHTML;
-
+        container.replaceChildren(...cards);
     } catch (error) {
-        container.innerHTML = `<p class="error-msg">Failed to load live table. Please refresh.</p>`;
+        console.error('Could not load inventory from Supabase:', error);
+        container.innerHTML = '<p class="error-msg">Failed to load inventory. Check your Supabase settings and table permissions.</p>';
     }
 }
-fetchInventory();
+
+const inventoryContainer = document.getElementById('inventory-grid');
+if (inventoryContainer) {
+    fetchInventory();
+    window.setInterval(() => {
+        if (!document.hidden) fetchInventory();
+    }, 30000);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) fetchInventory();
+    });
+}
 
 function filterTable() {
-    //search input and the table
-    const input = document.getElementById("menuSearch");
+    const input = document.getElementById('menuSearch');
+    const container = document.getElementById('inventory-grid');
+    if (!input || !container) return;
     const filter = input.value.toLowerCase();
-    const table = document.querySelector(".inventory-table");
-    
-    // Safety check in case table isn't loaded yet
-    if (!table) return;
-
-    const tr = table.getElementsByTagName("tr");
-
-    // Loop through all table rows (starting from index 1 to skip the header)
-    for (let i = 1; i < tr.length; i++) {
-        const itemNameCell = tr[i].getElementsByClassName("item-name")[0];
-        
-        if (itemNameCell) {
-            const txtValue = itemNameCell.textContent || itemNameCell.innerText;
-            
-            // If the item name matches the search, show it; otherwise, hide it
-            if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-        }
-    }
+    container.querySelectorAll('.menu-product-card').forEach(card => {
+        const name = card.querySelector('.menu-product-name')?.textContent || '';
+        card.hidden = !name.toLowerCase().includes(filter);
+    });
 }
 
-// --- FORM HANDLING SECTION ---
 const contactForm = document.getElementById('catering-contact-form');
-
 if (contactForm) {
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
-
-        // 1. Capture the values using the IDs from your HTML
         const name = document.getElementById('customer_name').value;
         const email = document.getElementById('customer_email').value;
-        const phone = document.getElementById('customer_Phone_Number').value; // New Field
-        const date = document.getElementById('event_date').value || "Not specified";
-        const guests = document.getElementById('guest_count').value || "Not specified";
-        const type = document.getElementById('event_type').value || "General Inquiry";
+        const phone = document.getElementById('customer_Phone_Number').value;
+        const date = document.getElementById('event_date').value || 'Not specified';
+        const guests = document.getElementById('guest_count').value || 'Not specified';
+        const type = document.getElementById('event_type').value || 'General Inquiry';
         const message = document.getElementById('message').value;
-
-        // 2. Format the WhatsApp Message
-        // %0A creates a new line, *text* makes it bold
-        const waMessage = `*NEW CATERING INQUIRY*%0A` + 
-                          `--------------------------%0A` +
-                          `Name :       ${name}%0A` +
-                          `Email :      ${email}%0A` +
-                          `Phone :      ${phone}%0A` +
-                          `Event Date : ${date}%0A` +
-                          `Guests :     ${guests}%0A` +
-                          `Type :       ${type}%0A` +
-                          `Details :    ${message}`;
-
-        // 3. Owner's Phone Number (Sri Lankan format: 94 + number)
-        const ownerNumber = "94772292073"; 
-
-        // 4. Generate URL and Open WhatsApp
-        const waURL = `https://wa.me/${ownerNumber}?text=${waMessage}`;
-        
-        // Open in new tab
-        window.open(waURL, '_blank');
-
-        // 5. Show your Success Modal
+        const waMessage = `*NEW CATERING INQUIRY*\n--------------------------\nName : ${name}\nEmail : ${email}\nPhone : ${phone}\nEvent Date : ${date}\nGuests : ${guests}\nType : ${type}\nDetails : ${message}`;
+        window.open(`https://wa.me/94772292073?text=${encodeURIComponent(waMessage)}`, '_blank');
         const modal = document.getElementById('successModal');
         const userNameDisplay = document.getElementById('userNameDisplay');
-        if (modal) {
+        if (modal && userNameDisplay) {
             userNameDisplay.innerText = name;
             modal.style.display = 'flex';
         }
-        
-        // Clear the form
         contactForm.reset();
     });
 }
 
-// --- Get a Quote Button (Phone Call) ---
 const quoteBtn = document.getElementById('quoteBtn');
 if (quoteBtn) {
     quoteBtn.addEventListener('click', function() {
-        const userChoice = confirm("Would you like to speak with our Event Consultant for a personalized quote?");
-        if (userChoice) {
-            window.location.href = "tel:+94772292073";
+        if (confirm('Would you like to speak with our Event Consultant for a personalized quote?')) {
+            window.location.href = 'tel:+94772292073';
         }
     });
 }
