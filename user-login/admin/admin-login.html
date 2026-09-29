@@ -24,11 +24,15 @@
         <div class="admin-heading">
             <div>
                 <p class="admin-eyebrow">CATALOG MANAGEMENT</p>
-                <h1>Admin sign in</h1>
-                <p>Sign in with an approved administrator account.</p>
+                <h1 id="auth-title">Admin Login</h1>
+                <p id="auth-description">Sign in with an approved administrator account.</p>
             </div>
         </div>
         <section class="admin-panel auth-panel">
+            <nav class="admin-auth-tabs" role="tablist" aria-label="Admin account options">
+                <button id="login-tab" class="admin-auth-tab active" type="button" role="tab" aria-selected="true">Login</button>
+                <button id="register-tab" class="admin-auth-tab" type="button" role="tab" aria-selected="false">Register</button>
+            </nav>
             <form id="admin-login-form" class="admin-form">
                 <label for="admin-email">Email</label>
                 <input id="admin-email" type="email" autocomplete="username" required>
@@ -36,8 +40,17 @@
                 <input id="admin-password" type="password" autocomplete="current-password" required>
                 <button id="login-button" class="admin-primary" type="submit">Sign in</button>
             </form>
+            <form id="admin-register-form" class="admin-form hidden">
+                <label for="admin-name">Full name</label>
+                <input id="admin-name" type="text" autocomplete="name" minlength="2" required>
+                <label for="admin-register-email">Email</label>
+                <input id="admin-register-email" type="email" autocomplete="email" required>
+                <label for="admin-register-password">Password</label>
+                <input id="admin-register-password" type="password" autocomplete="new-password" minlength="6" required>
+                <button id="register-button" class="admin-primary" type="submit">Register</button>
+            </form>
             <p id="admin-login-status" class="admin-status" role="status" aria-live="polite"></p>
-            <p class="auth-switch">Need an admin account? <a href="admin-register.html">Register</a></p>
+            <p id="approval-note" class="approval-note hidden">Registration does not grant dashboard access. An existing administrator must approve the account.</p>
         </section>
     </main>
 

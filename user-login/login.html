@@ -15,11 +15,11 @@
             <a class="back-link" href="../CS.html">← Back to website</a>
             <p class="eyebrow">CS CATERING ACCOUNT</p>
             <h1 id="page-title">Welcome</h1>
-            <p class="intro">Sign in or create an account to continue.</p>
+            <p class="intro">Login or register to continue.</p>
 
             <div class="tabs" role="tablist" aria-label="Account options">
-                <button class="tab active" id="signin-tab" type="button" role="tab" aria-selected="true">Sign in</button>
-                <button class="tab" id="signup-tab" type="button" role="tab" aria-selected="false">Create account</button>
+                <button class="tab active" id="signin-tab" type="button" role="tab" aria-selected="true">Login</button>
+                <button class="tab" id="signup-tab" type="button" role="tab" aria-selected="false">Register</button>
             </div>
 
             <form id="account-form">
@@ -35,12 +35,24 @@
                 <label for="password">Password</label>
                 <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters">
 
-                <button id="submit-button" class="submit-button" type="submit">Sign in</button>
+                <button id="submit-button" class="submit-button" type="submit">Login</button>
             </form>
 
             <p id="message" class="message" role="status" aria-live="polite"></p>
             <section id="signed-in-panel" class="signed-in-panel hidden" aria-live="polite">
-                <p>You are signed in as <strong id="signed-in-email"></strong>.</p>
+                <p class="signed-in-heading">Your account</p>
+                <p class="account-email">Email: <strong id="signed-in-email"></strong></p>
+                <form id="profile-form">
+                    <label for="profile-name">Full name</label>
+                    <input id="profile-name" type="text" autocomplete="name" minlength="2" required>
+
+                    <label for="profile-phone">Contact number</label>
+                    <input id="profile-phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" pattern="[+0-9() .-]{7,20}" required title="Enter 7 to 20 characters using digits, spaces, +, parentheses, dots, or hyphens">
+
+                    <button id="save-profile-button" class="submit-button" type="submit">Save changes</button>
+                </form>
+                <p id="profile-message" class="message" role="status" aria-live="polite"></p>
+                <a id="continue-button" class="continue-button" href="../CS.html">Continue to website</a>
                 <button id="signout-button" class="secondary-button" type="button">Sign out</button>
             </section>
             <p class="privacy-note">Your account is managed securely by Supabase Authentication.</p>

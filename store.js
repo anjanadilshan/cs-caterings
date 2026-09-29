@@ -24,7 +24,7 @@ function imageUrl(path) {
 async function loadStoreProducts() {
     if (!supabaseClient) throw new Error('Supabase could not load. Refresh the page or check your connection.');
     const { data, error } = await supabaseClient
-        .from('cleaning_products')
+        .from('store_products')
         .select('id, name, description, price, available, image_path')
         .eq('is_active', true)
         .order('name', { ascending: true });

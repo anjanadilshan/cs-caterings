@@ -74,6 +74,41 @@ header {
     color: black;
 }
 
+.nav-btn.account-signed-in span {
+    max-width: 150px;
+    margin-left: 8px;
+    opacity: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-page .header-nav { flex-wrap: wrap; justify-content: flex-end; }
+.home-page .nav-btn span,
+.home-page .nav-btn:hover span {
+    max-width: 100px;
+    margin-left: 8px;
+    opacity: 1;
+}
+
+@media (max-width: 900px) {
+    .home-page .header-container { flex-wrap: wrap; gap: 14px; }
+    .home-page .header-nav { flex: 1 0 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+    .home-page header { padding: 14px; }
+    .home-page .header-container { justify-content: center; }
+    .home-page .left,
+    .home-page .center { flex: 1; }
+    .home-page .center { text-align: right; }
+    .home-page .company-name { font-size: 20px; }
+    .home-page .header-nav { gap: 7px; }
+    .home-page .nav-btn { padding: 8px 10px; font-size: 12px; }
+    .home-page .nav-btn span,
+    .home-page .nav-btn:hover span { margin-left: 6px; }
+}
+
 .contact-special { background-color: var(--accent-color); color: black; }
 
 /* --- HOME HERO SECTION --- */
@@ -171,12 +206,67 @@ header {
 
 /* CTA Section */
 .cta-section {
-    padding: 100px 20px;
-    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('hero-bg.jpg'); /* Use your kitchen image here */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    padding: 68px 20px 72px;
+    background: #151515;
     text-align: center;
+}
+
+.cta-content h2 { margin-bottom: 12px; font-family: 'Cinzel', serif; color: #fff; }
+.cta-content p { color: var(--text-dim); }
+.cta-content .gold-btn { margin: 22px 8px 0; }
+
+.site-footer {
+    padding: 46px clamp(20px, 6vw, 80px) 18px;
+    background: #080a09;
+    border-top: 1px solid rgba(212, 175, 55, .28);
+    color: var(--text-dim);
+}
+
+.site-footer-main {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) repeat(2, minmax(160px, 1fr));
+    gap: 48px;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-bottom: 34px;
+}
+
+.footer-wordmark {
+    color: var(--text-light);
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-decoration: none;
+}
+
+.footer-wordmark span { color: var(--accent-color); }
+.site-footer-brand p { max-width: 330px; margin-top: 14px; line-height: 1.7; }
+.site-footer h2 { margin: 4px 0 16px; color: var(--text-light); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+.site-footer-links, .site-footer-contact { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.site-footer a:not(.footer-wordmark) { color: var(--text-dim); text-decoration: none; transition: color .2s ease; }
+.site-footer a:not(.footer-wordmark):hover { color: var(--accent-color); }
+.site-footer-contact a i { width: 18px; margin-right: 6px; color: var(--accent-color); }
+.site-footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    font-size: 12px;
+}
+.site-footer-bottom a { color: var(--accent-color) !important; }
+
+@media (max-width: 700px) {
+    .site-footer-main { grid-template-columns: 1fr 1fr; gap: 30px 22px; }
+    .site-footer-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 420px) {
+    .site-footer-main { grid-template-columns: 1fr; }
+    .site-footer-brand { grid-column: auto; }
+    .site-footer-bottom { flex-direction: column; }
 }
 
 .gold-btn {

@@ -67,7 +67,34 @@
     max-width: 440px;
 }
 
-.auth-switch,
+.admin-auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: -24px -24px 22px;
+    border-bottom: 1px solid #dce1d9;
+}
+
+.admin-auth-tab {
+    display: grid;
+    min-height: 50px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #65716a;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-auth-tab.active {
+    border-bottom-color: #d4af37;
+    color: #805f19;
+}
+
+.admin-auth-tab:focus-visible { outline: 2px solid #a27a25; outline-offset: -3px; }
+
 .approval-note {
     margin: 16px 0 0;
     color: #65716a;
@@ -75,7 +102,6 @@
     line-height: 1.6;
 }
 
-.auth-switch a { color: #805f19; font-weight: 600; }
 .approval-note { padding-top: 12px; border-top: 1px solid #e6e9e3; }
 
 .admin-panel h2 {
@@ -259,6 +285,7 @@
 }
 
 .admin-product-list { display: grid; gap: 10px; }
+.users-panel { max-width: 100%; }
 
 .admin-product-row {
     display: grid;
@@ -286,6 +313,13 @@
 .admin-product-actions button { min-width: 36px; height: 36px; border: 1px solid #dce1d9; border-radius: 4px; background: #fff; color: #35463a; cursor: pointer; }
 .admin-product-actions button:hover { background: #eef2ed; }
 .admin-product-actions .delete-product { color: #a32e26; }
+.admin-user-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px; border: 1px solid #e0e5df; border-radius: 4px; }
+.admin-user-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 8px; }
+.admin-user-actions button { min-height: 36px; }
+.delete-user { min-height: 36px; padding: 0 12px; border: 1px solid #efd1ce; border-radius: 4px; background: #fff; color: #a32e26; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.delete-user:hover { background: #fbefee; }
+.user-role { display: inline-flex; width: fit-content; margin-top: 8px; padding: 4px 8px; border-radius: 3px; background: #eef1ec; color: #536056; font-size: 11px; font-weight: 600; }
+.user-role.admin-role { background: #f7efda; color: #805f19; }
 .admin-empty { margin: 0; padding: 24px 10px; color: #69756d; text-align: center; }
 .hidden { display: none !important; }
 
@@ -300,5 +334,7 @@
     .admin-product-row { grid-template-columns: 58px minmax(0, 1fr); gap: 10px; }
     .admin-product-image { width: 58px; }
     .admin-product-actions { grid-column: 2; }
+    .admin-user-row { grid-template-columns: 1fr; }
+    .admin-user-actions { justify-content: start; }
     .admin-toolbar { align-items: start; }
 }

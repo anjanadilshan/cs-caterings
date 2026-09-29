@@ -11,7 +11,7 @@ async function fetchInventory() {
 
     try {
         const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/inventory?select=name,description,total,available,image_path,is_active&is_active=eq.true&order=name.asc`,
+            `${SUPABASE_URL}/rest/v1/rental_items?select=name,description,price,total,available,image_path,is_active&is_active=eq.true&order=name.asc`,
             { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
         );
         if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
@@ -50,13 +50,16 @@ async function fetchInventory() {
             name.textContent = item.name;
             const description = document.createElement('p');
             description.className = 'menu-product-description';
-            description.textContent = item.description || 'Cleaning product';
+            description.textContent = item.description || 'Rental item';
             const footer = document.createElement('div');
             footer.className = 'menu-product-footer';
+            const price = document.createElement('strong');
+            price.className = 'menu-product-price';
+            price.textContent = new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR' }).format(Number(item.price) || 0);
             const stock = document.createElement('span');
             stock.className = `menu-product-stock ${out ? 'out' : ''}`;
             stock.textContent = `${available} available now / ${total} total`;
-            footer.append(stock);
+            footer.append(price, stock);
             details.append(name, description, footer);
             card.append(details);
             return card;

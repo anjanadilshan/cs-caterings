@@ -18,7 +18,7 @@
                 <a href="CS.html" class="nav-btn" aria-label="Home" title="Home"><i class="fa-solid fa-house"></i><span>Home</span></a>
                 <a href="menu.html" class="nav-btn" aria-label="Rental items" title="Rental items"><i class="fa-solid fa-boxes-stacked"></i><span>Rentals</span></a>
                 <a href="store.html" class="nav-btn active" aria-label="Store" title="Store"><i class="fa-solid fa-store"></i><span>Store</span></a>
-                <a href="user-login/login.html" class="nav-btn" aria-label="Account" title="Account"><i class="fa-solid fa-user"></i><span>Account</span></a>
+                <a id="account-nav-link" href="user-login/login.html" class="nav-btn" aria-label="Account" title="Account"><i class="fa-solid fa-user"></i><span>Login</span></a>
             </div>
         </nav>
     </header>
@@ -58,7 +58,7 @@
 
     <footer class="store-footer">
         <span>CS HOME CARE</span>
-        <a href="user-login/admin/admin-login.html">Admin sign in</a>
+        <a id="admin-signin-link" href="user-login/admin/admin-login.html" hidden>Admin sign in</a>
     </footer>
 
     <dialog id="cart-dialog" class="cart-dialog" aria-labelledby="cart-heading">
@@ -81,6 +81,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-client.js"></script>
+    <script src="account-nav.js"></script>
     <script src="store.js"></script>
 </body>
 </html>

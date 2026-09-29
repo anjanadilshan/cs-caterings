@@ -40,9 +40,10 @@
             <div class="catalog-tabs" role="tablist" aria-label="Choose catalog">
                 <button id="rental-tab" class="catalog-tab active" type="button" role="tab" aria-selected="true">Rental items</button>
                 <button id="cleaning-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Cleaning products</button>
+                <button id="users-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Users</button>
             </div>
 
-            <div class="admin-columns">
+            <div id="catalog-panel" class="admin-columns">
                 <section class="admin-panel product-editor">
                     <div class="panel-heading">
                         <div>
@@ -58,9 +59,9 @@
                         <textarea id="product-description" name="description" rows="4" maxlength="1200" required></textarea>
 
                         <div class="admin-field-row">
-                            <div id="price-field" class="hidden">
+                            <div id="price-field">
                                 <label for="product-price">Price (LKR)</label>
-                                <input id="product-price" name="price" type="number" min="0" step="0.01">
+                                <input id="product-price" name="price" type="number" min="0" step="0.01" required>
                             </div>
                             <div>
                                 <label for="product-total">Total stock</label>
@@ -101,6 +102,18 @@
                     <div id="admin-product-list" class="admin-product-list" aria-live="polite"></div>
                 </section>
             </div>
+
+            <section id="users-panel" class="admin-panel users-panel hidden">
+                <div class="panel-heading">
+                    <div>
+                        <p class="admin-eyebrow">ACCOUNT MANAGEMENT</p>
+                        <h2>Registered users <span id="user-count" class="count-badge">0</span></h2>
+                    </div>
+                    <button id="refresh-users" class="icon-button" type="button" aria-label="Refresh users" title="Refresh users"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+                <p id="user-status" class="admin-status" role="status" aria-live="polite"></p>
+                <div id="admin-user-list" class="admin-product-list" aria-live="polite"></div>
+            </section>
         </section>
     </main>
 

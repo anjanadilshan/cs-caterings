@@ -13,15 +13,23 @@ const formHeading = document.getElementById('form-heading');
 const productCount = document.getElementById('product-count');
 const rentalTab = document.getElementById('rental-tab');
 const cleaningTab = document.getElementById('cleaning-tab');
+const usersTab = document.getElementById('users-tab');
+const catalogPanel = document.getElementById('catalog-panel');
+const usersPanel = document.getElementById('users-panel');
+const userList = document.getElementById('admin-user-list');
+const userCount = document.getElementById('user-count');
+const userStatus = document.getElementById('user-status');
 const priceField = document.getElementById('price-field');
 const priceInput = document.getElementById('product-price');
 let products = [];
+let users = [];
 let editingProduct = null;
 let previewUrl = '';
 let catalogMode = 'rental';
+let currentAdminId = '';
 
 function catalogTable() {
-    return catalogMode === 'cleaning' ? 'cleaning_products' : 'inventory';
+    return catalogMode === 'cleaning' ? 'store_products' : 'rental_items';
 }
 
 function imageBucket() {
@@ -91,12 +99,9 @@ async function loadProducts() {
     loading.textContent = 'Loading products...';
     productList.append(loading);
 
-    const fields = catalogMode === 'cleaning'
-        ? 'id, name, description, price, total, available, image_path, is_active, created_at'
-        : 'id, name, description, total, available, image_path, is_active, created_at';
     const { data, error } = await supabaseClient
         .from(catalogTable())
-        .select(fields)
+        .select('id, name, description, price, total, available, image_path, is_active, created_at')
         .order('created_at', { ascending: false });
     if (error) throw error;
     products = data || [];
@@ -128,12 +133,10 @@ function renderProducts() {
         const stock = document.createElement('p');
         stock.textContent = `${product.available} available of ${product.total} · ${product.is_active ? 'Visible' : 'Hidden'}`;
         info.append(name, stock);
-        if (catalogMode === 'cleaning') {
-            const price = document.createElement('p');
-            price.className = 'admin-product-price';
-            price.textContent = new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR' }).format(Number(product.price));
-            info.append(price);
-        }
+        const price = document.createElement('p');
+        price.className = 'admin-product-price';
+        price.textContent = new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR' }).format(Number(product.price));
+        info.append(price);
 
         const actions = document.createElement('div');
         actions.className = 'admin-product-actions';
@@ -161,7 +164,7 @@ function startEditing(product) {
     editingProduct = product;
     productForm.elements.name.value = product.name;
     productForm.elements.description.value = product.description || '';
-    priceInput.value = catalogMode === 'cleaning' ? product.price : '';
+    priceInput.value = product.price;
     productForm.elements.total.value = product.total;
     productForm.elements.available.value = product.available;
     productForm.elements.active.checked = product.is_active;
@@ -180,12 +183,12 @@ async function handleProductSubmit(event) {
     const formData = new FormData(productForm);
     const name = String(formData.get('name')).trim();
     const description = String(formData.get('description')).trim();
-    const price = catalogMode === 'cleaning' ? Number(formData.get('price')) : null;
+    const price = Number(formData.get('price'));
     const total = Number(formData.get('total'));
     const available = Number(formData.get('available'));
     const file = imageInput.files[0];
 
-    if ((catalogMode === 'cleaning' && price < 0) || total < 0 || available < 0 || available > total) {
+    if (!Number.isFinite(price) || price < 0 || total < 0 || available < 0 || available > total) {
         setStatus(formStatus, 'Check the price and stock values. Available stock cannot exceed total stock.', 'error');
         return;
     }
@@ -211,10 +214,8 @@ async function handleProductSubmit(event) {
 
         let result;
         if (editingProduct) {
-            if (catalogMode === 'cleaning') values.price = price;
             result = await supabaseClient.from(catalogTable()).update(values).eq('id', editingProduct.id);
         } else {
-            if (catalogMode === 'cleaning') values.price = price;
             result = await supabaseClient.from(catalogTable()).insert(values);
         }
         if (result.error) throw result.error;
@@ -249,16 +250,122 @@ function setCatalogMode(mode) {
     const cleaning = mode === 'cleaning';
     rentalTab.classList.toggle('active', !cleaning);
     cleaningTab.classList.toggle('active', cleaning);
+    usersTab.classList.remove('active');
     rentalTab.setAttribute('aria-selected', String(!cleaning));
     cleaningTab.setAttribute('aria-selected', String(cleaning));
-    priceField.classList.toggle('hidden', !cleaning);
-    priceInput.required = cleaning;
+    usersTab.setAttribute('aria-selected', 'false');
+    catalogPanel.classList.remove('hidden');
+    usersPanel.classList.add('hidden');
+    priceField.classList.remove('hidden');
+    priceInput.required = true;
     document.getElementById('catalog-eyebrow').textContent = cleaning ? 'CLEANING PRODUCT STORE' : 'RENTAL INVENTORY';
     document.getElementById('list-heading').textContent = cleaning ? 'Cleaning products' : 'Rental items';
     document.getElementById('active-label').textContent = cleaning ? 'Show in cleaning store' : 'Show on rental list';
     document.getElementById('image-hint').textContent = `Choose an image up to 5 MB. A photo is required for new ${itemLabel()}s.`;
     resetProductForm();
     loadProducts().catch(error => setStatus(formStatus, error.message || 'Could not load the catalog.', 'error'));
+}
+
+async function loadUsers() {
+    userList.replaceChildren();
+    setStatus(userStatus, 'Loading users...');
+    const { data, error } = await supabaseClient.rpc('admin_list_users');
+    if (error) throw error;
+    users = data || [];
+    userCount.textContent = String(users.length);
+    renderUsers();
+    setStatus(userStatus, `${users.length} registered users`);
+}
+
+function renderUsers() {
+    userList.replaceChildren();
+    if (!users.length) {
+        const empty = document.createElement('p');
+        empty.className = 'admin-empty';
+        empty.textContent = 'No registered users found.';
+        userList.append(empty);
+        return;
+    }
+
+    users.forEach(user => {
+        const row = document.createElement('article');
+        row.className = 'admin-user-row';
+        const details = document.createElement('div');
+        details.className = 'admin-product-info';
+        const name = document.createElement('h3');
+        name.textContent = user.full_name || user.email || 'Unnamed account';
+        const email = document.createElement('p');
+        email.textContent = user.email || 'No email address';
+        const phone = document.createElement('p');
+        phone.textContent = `Contact: ${user.phone_number || 'No contact number'}`;
+        const joined = document.createElement('p');
+        joined.textContent = `Joined ${new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(user.created_at))}`;
+        const role = document.createElement('span');
+        role.className = `user-role ${user.is_admin ? 'admin-role' : ''}`;
+        role.textContent = user.is_admin ? 'Administrator' : 'User';
+        details.append(name, email, phone, joined, role);
+
+        const actions = document.createElement('div');
+        actions.className = 'admin-user-actions';
+        if (user.user_id !== currentAdminId) {
+            const roleButton = document.createElement('button');
+            roleButton.type = 'button';
+            roleButton.className = 'admin-secondary';
+            roleButton.textContent = user.is_admin ? 'Remove admin access' : 'Approve as admin';
+            roleButton.addEventListener('click', () => updateAdminAccess(user));
+            actions.append(roleButton);
+
+            if (!user.is_admin) {
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'delete-user';
+                deleteButton.textContent = 'Delete user';
+                deleteButton.addEventListener('click', () => deleteUser(user));
+                actions.append(deleteButton);
+            }
+        }
+
+        row.append(details, actions);
+        userList.append(row);
+    });
+}
+
+async function updateAdminAccess(user) {
+    const action = user.is_admin ? 'remove administrator access from' : 'approve';
+    if (!window.confirm(`Are you sure you want to ${action} ${user.email}?`)) return;
+    try {
+        const { error } = await supabaseClient.rpc('admin_set_user_admin', {
+            p_user_id: user.user_id,
+            p_make_admin: !user.is_admin
+        });
+        if (error) throw error;
+        await loadUsers();
+    } catch (error) {
+        setStatus(userStatus, error.message || 'Could not update administrator access.', 'error');
+    }
+}
+
+async function deleteUser(user) {
+    if (!window.confirm(`Permanently delete ${user.email}? Their sign-in and profile will be removed.`)) return;
+    try {
+        const { error } = await supabaseClient.rpc('admin_delete_user', { p_user_id: user.user_id });
+        if (error) throw error;
+        await loadUsers();
+    } catch (error) {
+        setStatus(userStatus, error.message || 'Could not delete this user.', 'error');
+    }
+}
+
+function showUsers() {
+    rentalTab.classList.remove('active');
+    cleaningTab.classList.remove('active');
+    usersTab.classList.add('active');
+    rentalTab.setAttribute('aria-selected', 'false');
+    cleaningTab.setAttribute('aria-selected', 'false');
+    usersTab.setAttribute('aria-selected', 'true');
+    catalogPanel.classList.add('hidden');
+    usersPanel.classList.remove('hidden');
+    loadUsers().catch(error => setStatus(userStatus, error.message || 'Could not load users.', 'error'));
 }
 
 async function handleSession(session) {
@@ -283,6 +390,7 @@ async function handleSession(session) {
 
     accessStatus.classList.add('hidden');
     dashboard.classList.remove('hidden');
+    currentAdminId = user.id;
     accountLabel.textContent = user.email || 'Administrator';
     await loadProducts();
 }
@@ -299,10 +407,14 @@ if (!supabaseClient) {
     productForm.addEventListener('submit', handleProductSubmit);
     rentalTab.addEventListener('click', () => setCatalogMode('rental'));
     cleaningTab.addEventListener('click', () => setCatalogMode('cleaning'));
+    usersTab.addEventListener('click', showUsers);
     imageInput.addEventListener('change', () => showImagePreview(imageInput.files[0]));
     cancelEditButton.addEventListener('click', resetProductForm);
     document.getElementById('refresh-products').addEventListener('click', () => loadProducts().catch(error => {
         setStatus(formStatus, error.message || 'Could not load products.', 'error');
+    }));
+    document.getElementById('refresh-users').addEventListener('click', () => loadUsers().catch(error => {
+        setStatus(userStatus, error.message || 'Could not load users.', 'error');
     }));
     document.getElementById('dashboard-signout').addEventListener('click', signOut);
 
