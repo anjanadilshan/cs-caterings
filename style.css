@@ -74,6 +74,9 @@ header {
     color: black;
 }
 
+*, *::before, *::after { box-sizing: border-box; }
+img, video { max-width: 100%; }
+
 .nav-btn.account-signed-in span {
     max-width: 150px;
     margin-left: 8px;
@@ -267,6 +270,61 @@ header {
     .site-footer-main { grid-template-columns: 1fr; }
     .site-footer-brand { grid-column: auto; }
     .site-footer-bottom { flex-direction: column; }
+}
+
+/* Shared layouts for tablets and narrow phones */
+@media (max-width: 900px) {
+    header { padding: 16px clamp(16px, 4vw, 32px); }
+    .header-container { flex-wrap: wrap; gap: 12px; }
+    .header-nav { flex: 1 0 100%; justify-content: center; flex-wrap: wrap; }
+    .nav-btn span, .nav-btn:hover span, .nav-btn.active span,
+    .nav-btn.account-signed-in span { max-width: 150px; margin-left: 7px; opacity: 1; }
+    .contact-section { padding: 64px clamp(18px, 5vw, 50px); }
+    .contact-container { gap: 36px; }
+    .contact-form-wrapper { padding: clamp(22px, 5vw, 40px); }
+    .story-container { gap: 32px; margin: 56px auto; }
+}
+
+@media (max-width: 600px) {
+    header { padding: 12px 14px; }
+    .header-container { justify-content: center; }
+    .header-container > .left, .header-container > .center { flex: 1 1 auto; }
+    .header-container > .center { text-align: right; }
+    .company-name { font-size: clamp(16px, 4.5vw, 21px); letter-spacing: 1px; }
+    .logo { width: 42px; height: 42px; }
+    .header-nav { gap: 6px; }
+    .nav-btn { min-height: 40px; padding: 8px 10px; font-size: 12px; }
+    .nav-btn span, .nav-btn:hover span, .nav-btn.active span,
+    .nav-btn.account-signed-in span { max-width: none; margin-left: 6px; }
+    .hero { min-height: 580px; height: auto; padding: 70px 18px; }
+    .hero-btns { flex-wrap: wrap; gap: 10px; }
+    .main-btn, .outline-btn, .gold-btn { max-width: 100%; padding: 13px 18px; }
+    .home-intro, .services-section { padding: 56px 18px; }
+    .content-box h2, .section-title h2 { font-size: clamp(1.7rem, 7vw, 2.3rem); }
+    .service-card, .value-card { padding: 26px 20px; }
+    .contact-section { padding: 48px 16px; }
+    .contact-container { gap: 28px; }
+    .contact-info h2 { font-size: clamp(1.8rem, 8vw, 2.4rem); }
+    .contact-form-wrapper { padding: 20px 16px; }
+    .form-row { flex-direction: column; gap: 14px; }
+    .story-container { margin: 42px auto; padding: 0 18px; }
+    .story-text h2 { font-size: 2rem; }
+    .story-image img { box-shadow: 10px 10px 0 #faedcd; }
+    .about-hero { min-height: 360px; height: auto; padding: 60px 18px; }
+    .hero-content h1 { font-size: clamp(2rem, 10vw, 2.7rem); }
+    .hero-content p { font-size: .95rem; letter-spacing: 1px; }
+    .menu-hero { padding: 58px 16px; }
+    .menu-hero h1 { font-size: clamp(1.7rem, 8vw, 2.5rem); }
+    .section-title { margin: 42px 16px 28px; }
+    .item-header { gap: 12px; font-size: 1rem; }
+    .site-footer { padding: 36px 20px 18px; }
+}
+
+@media (max-width: 380px) {
+    .header-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+    .nav-btn { justify-content: center; padding-inline: 6px; }
+    .nav-btn span, .nav-btn:hover span, .nav-btn.active span { font-size: 10px; }
+    .site-footer-main { gap: 24px 16px; }
 }
 
 .gold-btn {
@@ -802,6 +860,27 @@ body {
     .menu-product-name { font-size: 15px; }
     .menu-product-description { min-height: 0; }
     .menu-product-footer { align-items: flex-start; flex-direction: column; gap: 6px; }
+}
+
+@media (max-width: 900px) {
+    .story-container { flex-direction: column; text-align: center; }
+    .story-image { width: min(100%, 620px); }
+    .contact-container { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .story-container { margin: 42px auto; padding-inline: 18px; }
+    .story-text h2 { font-size: 2rem; }
+    .story-image img { box-shadow: 10px 10px 0 #faedcd; }
+    .about-hero { min-height: 360px; height: auto; padding: 60px 18px; }
+    .hero-content h1 { font-size: clamp(2rem, 10vw, 2.7rem); }
+    .hero-content p { font-size: .95rem; letter-spacing: 1px; }
+    .contact-section { padding: 48px 16px; }
+    .contact-info h2 { font-size: clamp(1.8rem, 8vw, 2.4rem); }
+    .contact-form-wrapper { padding: 20px 16px; }
+    .form-row { flex-direction: column; gap: 14px; }
+    .menu-hero { padding: 58px 16px; }
+    .menu-hero h1 { font-size: clamp(1.7rem, 8vw, 2.5rem); }
 }
 
 ------------------------------------------------------Menu page -----------------------------------------------------

@@ -492,6 +492,7 @@ async function signOut() {
 if (!supabaseClient) {
     setStatus(accessStatus, 'Supabase did not load. Check the project settings and your internet connection.', 'error');
 } else {
+    resetProductForm();
     productForm.addEventListener('submit', handleProductSubmit);
     rentalTab.addEventListener('click', () => setCatalogMode('rental'));
     cleaningTab.addEventListener('click', () => setCatalogMode('cleaning'));

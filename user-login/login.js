@@ -23,7 +23,7 @@ const signInTab = document.getElementById('signin-tab');
 const signUpTab = document.getElementById('signup-tab');
 const continueButton = document.getElementById('continue-button');
 const backLink = document.querySelector('.back-link');
-const allowedReturnPaths = new Set(['/CS.html', '/about.html', '/menu.html', '/store.html', '/contact.html']);
+const allowedReturnPaths = new Set(['/index.html', '/about.html', '/menu.html', '/store.html', '/contact.html']);
 
 function getWebsiteDestination() {
     const candidates = [
@@ -42,7 +42,7 @@ function getWebsiteDestination() {
         }
     }
 
-    return '../CS.html';
+    return '../index.html';
 }
 
 const websiteDestination = getWebsiteDestination();

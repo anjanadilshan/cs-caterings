@@ -59,7 +59,9 @@ h1 { margin: 0; font-family: Cinzel, serif; font-size: 32px; font-weight: 600; }
 form { display: grid; gap: 10px; }
 label { margin-top: 8px; color: #e4e5dd; font-size: 13px; }
 input { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 8px; outline: none; background: #17211d; color: var(--text); font: inherit; }
+textarea { width: 100%; box-sizing: border-box; padding: 13px 14px; border: 1px solid var(--line); border-radius: 8px; outline: none; background: #17211d; color: var(--text); font: inherit; resize: vertical; }
 input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(213, 173, 99, .13); }
+input:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(213, 173, 99, .13); }
 .submit-button, .secondary-button { min-height: 46px; margin-top: 12px; border: 0; border-radius: 8px; background: var(--gold); color: #1c211c; cursor: pointer; font: inherit; font-weight: 600; }
 .submit-button:disabled { cursor: wait; opacity: .65; }
 .message { min-height: 20px; margin: 16px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
@@ -80,4 +82,10 @@ input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(213, 173, 99
     .brand { position: static; margin-bottom: 22px; }
     .login-layout { display: flex; flex-direction: column; justify-content: center; }
     .login-card { padding: 28px 22px; }
+}
+
+@media (max-width: 360px) {
+    .login-layout { padding: 18px 10px; }
+    .login-card { padding: 22px 16px; }
+    h1 { font-size: 28px; }
 }

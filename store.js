@@ -133,6 +133,11 @@ function renderCart() {
     entries.forEach(({ product, quantity }) => {
         const row = document.createElement('div');
         row.className = 'cart-item';
+        const photo = document.createElement('img');
+        photo.className = 'cart-item-photo';
+        photo.src = imageUrl(product.image_path);
+        photo.alt = product.name;
+        photo.loading = 'lazy';
         const details = document.createElement('div');
         const name = document.createElement('h3');
         name.textContent = product.name;
@@ -159,7 +164,7 @@ function renderCart() {
         remove.setAttribute('aria-label', `Remove ${product.name} from basket`);
         remove.addEventListener('click', () => { cart.delete(product.id); renderCart(); });
         controls.append(decrease, quantityLabel, increase, remove);
-        row.append(details, controls);
+        row.append(photo, details, controls);
         cartItems.append(row);
     });
 }
