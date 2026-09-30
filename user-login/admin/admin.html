@@ -41,6 +41,7 @@
                 <button id="rental-tab" class="catalog-tab active" type="button" role="tab" aria-selected="true">Rental items</button>
                 <button id="cleaning-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Cleaning products</button>
                 <button id="users-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Users</button>
+                <button id="delivery-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Delivery areas</button>
             </div>
 
             <div id="catalog-panel" class="admin-columns">
@@ -63,14 +64,18 @@
                                 <label for="product-price">Price (LKR)</label>
                                 <input id="product-price" name="price" type="number" min="0" step="0.01" required>
                             </div>
-                            <div>
+                            <div id="total-stock-field">
                                 <label for="product-total">Total stock</label>
                                 <input id="product-total" name="total" type="number" min="0" step="1" required>
                             </div>
-                            <div>
+                            <div id="available-stock-field">
                                 <label for="product-available">Available</label>
                                 <input id="product-available" name="available" type="number" min="0" step="1" required>
                             </div>
+                        </div>
+                        <div id="cleaning-stock-count-field">
+                            <label for="cleaning-stock-count">In-stock quantity</label>
+                            <input id="cleaning-stock-count" name="cleaningStockCount" type="number" min="0" step="1" value="1" required>
                         </div>
 
                         <label for="product-image">Product photo</label>
@@ -113,6 +118,11 @@
                 </div>
                 <p id="user-status" class="admin-status" role="status" aria-live="polite"></p>
                 <div id="admin-user-list" class="admin-product-list" aria-live="polite"></div>
+            </section>
+            <section id="delivery-panel" class="admin-panel users-panel hidden">
+                <div class="panel-heading"><div><p class="admin-eyebrow">CASH ON DELIVERY</p><h2>Delivery locations</h2></div></div>
+                <p class="field-hint">Add one area per line as: Area name | COD (or online). These locations appear at checkout.</p>
+                <form id="delivery-area-form" class="admin-form"><label for="delivery-area-list">Areas</label><textarea id="delivery-area-list" rows="8" placeholder="Colombo | COD\nKandy | online"></textarea><button class="admin-primary" type="submit">Save delivery areas</button><p id="delivery-status" class="admin-status" role="status"></p></form>
             </section>
         </section>
     </main>

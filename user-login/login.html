@@ -29,6 +29,9 @@
                 <label id="phone-label" class="hidden" for="phone-number">Contact number</label>
                 <input id="phone-number" class="hidden" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" pattern="[\d+ .\-]{7,20}" placeholder="e.g. +94 77 123 4567" title="Enter 7 to 20 characters using digits, spaces, +, dots, or hyphens">
 
+                <label id="address-label" class="hidden" for="address">Delivery address</label>
+                <textarea id="address" class="hidden" autocomplete="street-address" rows="3" placeholder="Street, area, city"></textarea>
+
                 <label for="email">Email address</label>
                 <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
 
@@ -48,6 +51,9 @@
 
                     <label for="profile-phone">Contact number</label>
                     <input id="profile-phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" pattern="[+0-9() .-]{7,20}" required title="Enter 7 to 20 characters using digits, spaces, +, parentheses, dots, or hyphens">
+
+                    <label for="profile-address">Delivery address</label>
+                    <textarea id="profile-address" autocomplete="street-address" rows="3"></textarea>
 
                     <button id="save-profile-button" class="submit-button" type="submit">Save changes</button>
                 </form>

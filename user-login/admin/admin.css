@@ -312,6 +312,8 @@
 .admin-product-actions { display: flex; gap: 6px; }
 .admin-product-actions button { min-width: 36px; height: 36px; border: 1px solid #dce1d9; border-radius: 4px; background: #fff; color: #35463a; cursor: pointer; }
 .admin-product-actions button:hover { background: #eef2ed; }
+.admin-product-actions .toggle-stock { width: auto; padding: 0 10px; color: #304a38; font-size: 12px; white-space: nowrap; }
+.admin-product-actions .stock-quantity-input { box-sizing: border-box; width: 76px; height: 36px; padding: 0 7px; border: 1px solid #dce1d9; border-radius: 4px; color: #26372a; font: inherit; }
 .admin-product-actions .delete-product { color: #a32e26; }
 .admin-user-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px; border: 1px solid #e0e5df; border-radius: 4px; }
 .admin-user-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 8px; }

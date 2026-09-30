@@ -6,6 +6,8 @@ const nameInput = document.getElementById('full-name');
 const nameLabel = document.getElementById('name-label');
 const phoneInput = document.getElementById('phone-number');
 const phoneLabel = document.getElementById('phone-label');
+const addressInput = document.getElementById('address');
+const addressLabel = document.getElementById('address-label');
 const passwordInput = document.getElementById('password');
 const submitButton = document.getElementById('submit-button');
 const message = document.getElementById('message');
@@ -14,6 +16,7 @@ const signedInEmail = document.getElementById('signed-in-email');
 const profileForm = document.getElementById('profile-form');
 const profileName = document.getElementById('profile-name');
 const profilePhone = document.getElementById('profile-phone');
+const profileAddress = document.getElementById('profile-address');
 const profileMessage = document.getElementById('profile-message');
 const saveProfileButton = document.getElementById('save-profile-button');
 const signInTab = document.getElementById('signin-tab');
@@ -64,6 +67,9 @@ function setMode(nextMode) {
     phoneInput.classList.toggle('hidden', !creating);
     phoneLabel.classList.toggle('hidden', !creating);
     phoneInput.required = creating;
+    addressInput.classList.toggle('hidden', !creating);
+    addressLabel.classList.toggle('hidden', !creating);
+    addressInput.required = creating;
     passwordInput.autocomplete = creating ? 'new-password' : 'current-password';
     submitButton.textContent = creating ? 'Register' : 'Login';
     signInTab.classList.toggle('active', !creating);
@@ -82,6 +88,7 @@ async function showUser(user) {
     if (!user) {
         profileName.value = '';
         profilePhone.value = '';
+        profileAddress.value = '';
         profileMessage.textContent = '';
         showMessage('');
         return;
@@ -91,7 +98,7 @@ async function showUser(user) {
     profileMessage.textContent = 'Loading your details…';
     const { data, error } = await supabaseClient
         .from('profiles')
-        .select('full_name, phone_number')
+        .select('full_name, phone_number, delivery_address')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -99,6 +106,7 @@ async function showUser(user) {
     if (activeUserId !== user.id) return;
     profileName.value = data?.full_name || user.user_metadata?.full_name || '';
     profilePhone.value = data?.phone_number || user.user_metadata?.phone_number || '';
+    profileAddress.value = data?.delivery_address || user.user_metadata?.delivery_address || '';
     if (error) {
         profileMessage.className = 'message error';
         profileMessage.textContent = `Could not load saved details: ${error.message}`;
@@ -140,7 +148,8 @@ form.addEventListener('submit', async event => {
                 options: {
                     data: {
                         full_name: nameInput.value.trim(),
-                        phone_number: phoneInput.value.trim()
+                        phone_number: phoneInput.value.trim(),
+                        delivery_address: addressInput.value.trim()
                     }
                 }
             });
@@ -178,6 +187,7 @@ profileForm.addEventListener('submit', async event => {
             .update({
                 full_name: profileName.value.trim(),
                 phone_number: profilePhone.value.trim(),
+                delivery_address: profileAddress.value.trim(),
                 updated_at: new Date().toISOString()
             })
             .eq('id', activeUserId)

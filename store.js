@@ -7,6 +7,10 @@ const cartItems = document.getElementById('cart-items');
 const cartCount = document.getElementById('cart-count');
 const cartTotal = document.getElementById('cart-total');
 const checkoutButton = document.getElementById('checkout-button');
+const billingDialog = document.getElementById('billing-dialog');
+const billingForm = document.getElementById('billing-form');
+const deliveryAreaSelect = document.getElementById('delivery-area');
+let cashAreas = [];
 const currencyFormatter = new Intl.NumberFormat('en-LK', { style: 'currency', currency: 'LKR' });
 const cart = new Map();
 let products = [];
@@ -32,6 +36,11 @@ async function loadStoreProducts() {
     products = data || [];
     renderProducts();
     setStoreStatus(products.length ? `${products.length} products available` : 'No products are available right now.');
+    const areas = await supabaseClient.from('delivery_areas').select('name, cash_on_delivery').eq('is_active', true).order('name');
+    if (!areas.error) {
+        cashAreas = areas.data || [];
+        cashAreas.forEach(area => { const option = document.createElement('option'); option.value = area.name; option.textContent = area.name; deliveryAreaSelect.append(option); });
+    }
 }
 
 function renderProducts() {
@@ -145,19 +154,30 @@ function renderCart() {
         increase.disabled = quantity >= product.available;
         increase.setAttribute('aria-label', `Add one ${product.name}`);
         increase.addEventListener('click', () => changeQuantity(product.id, 1));
-        controls.append(decrease, quantityLabel, increase);
+        const remove = document.createElement('button');
+        remove.type = 'button'; remove.textContent = 'Remove'; remove.className = 'remove-item';
+        remove.setAttribute('aria-label', `Remove ${product.name} from basket`);
+        remove.addEventListener('click', () => { cart.delete(product.id); renderCart(); });
+        controls.append(decrease, quantityLabel, increase, remove);
         row.append(details, controls);
         cartItems.append(row);
     });
 }
 
-function sendWhatsAppOrder() {
+async function openCheckout() {
     const entries = [...cart.values()];
     if (!entries.length) return;
-    const lines = entries.map(({ product, quantity }) => `${product.name} x ${quantity} = ${currencyFormatter.format(Number(product.price) * quantity)}`);
     const total = entries.reduce((sum, entry) => sum + Number(entry.product.price) * entry.quantity, 0);
-    const message = `Hello, I would like to order these cleaning products:\n\n${lines.join('\n')}\n\nSubtotal: ${currencyFormatter.format(total)}`;
-    window.open(`https://wa.me/94772292073?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+    document.getElementById('billing-total').textContent = `Order total: ${currencyFormatter.format(total)}`;
+    document.getElementById('billing-status').textContent = '';
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+        const { data } = await supabaseClient.from('profiles').select('full_name, phone_number, delivery_address').eq('id', user.id).maybeSingle();
+        document.getElementById('billing-name').value = data?.full_name || user.user_metadata?.full_name || '';
+        document.getElementById('billing-phone').value = data?.phone_number || user.user_metadata?.phone_number || '';
+        document.getElementById('delivery-address').value = data?.delivery_address || user.user_metadata?.delivery_address || '';
+    }
+    billingDialog.showModal();
 }
 
 document.getElementById('open-cart').addEventListener('click', () => cartDialog.showModal());
@@ -165,7 +185,26 @@ document.getElementById('close-cart').addEventListener('click', () => cartDialog
 cartDialog.addEventListener('click', event => {
     if (event.target === cartDialog) cartDialog.close();
 });
-checkoutButton.addEventListener('click', sendWhatsAppOrder);
+checkoutButton.addEventListener('click', openCheckout);
+document.getElementById('close-billing').addEventListener('click', () => billingDialog.close());
+deliveryAreaSelect.addEventListener('change', () => {
+    const enabled = cashAreas.find(area => area.name === deliveryAreaSelect.value)?.cash_on_delivery === true;
+    const cod = billingForm.querySelector('input[value="Cash on delivery"]');
+    cod.disabled = !enabled;
+    if (!enabled && cod.checked) billingForm.querySelector('input[value="Visa / Mastercard"]').checked = true;
+    document.getElementById('cod-hint').textContent = enabled ? '' : ' (not available in this area)';
+});
+billingForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const selectedPayment = billingForm.querySelector('input[name="payment-method"]:checked');
+    if (selectedPayment.value === 'Cash on delivery' && cashAreas.find(area => area.name === deliveryAreaSelect.value)?.cash_on_delivery !== true) {
+        document.getElementById('billing-status').textContent = 'Cash on delivery is not available in this area.'; return;
+    }
+    const lines = [...cart.values()].map(({product, quantity}) => `${product.name} x ${quantity} = ${currencyFormatter.format(Number(product.price) * quantity)}`);
+    const total = [...cart.values()].reduce((sum, entry) => sum + Number(entry.product.price) * entry.quantity, 0);
+    const message = `Hello, I would like to place an order:\n${lines.join('\n')}\nTotal: ${currencyFormatter.format(total)}\nName: ${document.getElementById('billing-name').value}\nPhone: ${document.getElementById('billing-phone').value}\nDelivery area: ${deliveryAreaSelect.value}\nDelivery address: ${document.getElementById('delivery-address').value}\nBilling address: ${document.getElementById('billing-address').value}\nPayment: ${selectedPayment.value}`;
+    window.open(`https://wa.me/94772292073?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+});
 searchInput.addEventListener('input', renderProducts);
 
 renderCart();

@@ -14,6 +14,8 @@ const productCount = document.getElementById('product-count');
 const rentalTab = document.getElementById('rental-tab');
 const cleaningTab = document.getElementById('cleaning-tab');
 const usersTab = document.getElementById('users-tab');
+const deliveryTab = document.getElementById('delivery-tab');
+const deliveryPanel = document.getElementById('delivery-panel');
 const catalogPanel = document.getElementById('catalog-panel');
 const usersPanel = document.getElementById('users-panel');
 const userList = document.getElementById('admin-user-list');
@@ -55,6 +57,12 @@ function resetProductForm() {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     previewUrl = '';
     formHeading.textContent = `Add a ${itemLabel()}`;
+    document.getElementById('total-stock-field').classList.toggle('hidden', catalogMode === 'cleaning');
+    document.getElementById('available-stock-field').classList.toggle('hidden', catalogMode === 'cleaning');
+    document.getElementById('cleaning-stock-count-field').classList.toggle('hidden', catalogMode !== 'cleaning');
+    productForm.elements.cleaningStockCount.required = catalogMode === 'cleaning';
+    productForm.elements.total.required = catalogMode !== 'cleaning';
+    productForm.elements.available.required = catalogMode !== 'cleaning';
     saveButton.textContent = `Add ${itemLabel()}`;
     cancelEditButton.classList.add('hidden');
     setStatus(formStatus, '');
@@ -131,7 +139,9 @@ function renderProducts() {
         const name = document.createElement('h3');
         name.textContent = product.name;
         const stock = document.createElement('p');
-        stock.textContent = `${product.available} available of ${product.total} · ${product.is_active ? 'Visible' : 'Hidden'}`;
+        stock.textContent = catalogMode === 'cleaning'
+            ? `${product.available > 0 ? `${product.available} in stock` : 'Out of stock'} · ${product.is_active ? 'Visible' : 'Hidden'}`
+            : `${product.available} available of ${product.total} · ${product.is_active ? 'Visible' : 'Hidden'}`;
         info.append(name, stock);
         const price = document.createElement('p');
         price.className = 'admin-product-price';
@@ -154,7 +164,28 @@ function renderProducts() {
         remove.title = 'Delete product';
         remove.innerHTML = '<i class="fa-solid fa-trash"></i>';
         remove.addEventListener('click', () => deleteProduct(product));
-        actions.append(edit, remove);
+        actions.append(edit);
+        if (catalogMode === 'cleaning') {
+            const stockCount = document.createElement('input');
+            stockCount.type = 'number';
+            stockCount.min = '0';
+            stockCount.step = '1';
+            stockCount.value = String(product.total);
+            stockCount.className = 'stock-quantity-input';
+            stockCount.setAttribute('aria-label', `In-stock quantity for ${product.name}`);
+            stockCount.title = 'In-stock quantity';
+            stockCount.addEventListener('change', () => updateCleaningQuantity(product, stockCount));
+            actions.append(stockCount);
+
+            const stockToggle = document.createElement('button');
+            stockToggle.type = 'button';
+            stockToggle.className = 'toggle-stock';
+            stockToggle.textContent = product.available > 0 ? 'Mark out of stock' : 'Mark in stock';
+            stockToggle.setAttribute('aria-label', `${product.available > 0 ? 'Mark out of stock' : 'Mark in stock'}: ${product.name}`);
+            stockToggle.addEventListener('click', () => toggleCleaningStock(product));
+            actions.append(stockToggle);
+        }
+        actions.append(remove);
         row.append(image, info, actions);
         productList.append(row);
     });
@@ -165,8 +196,12 @@ function startEditing(product) {
     productForm.elements.name.value = product.name;
     productForm.elements.description.value = product.description || '';
     priceInput.value = product.price;
-    productForm.elements.total.value = product.total;
-    productForm.elements.available.value = product.available;
+    if (catalogMode !== 'cleaning') {
+        productForm.elements.total.value = product.total;
+        productForm.elements.available.value = product.available;
+    } else {
+        productForm.elements.cleaningStockCount.value = product.total;
+    }
     productForm.elements.active.checked = product.is_active;
     imageInput.value = '';
     imagePreview.src = publicImageUrl(product.image_path);
@@ -184,11 +219,14 @@ async function handleProductSubmit(event) {
     const name = String(formData.get('name')).trim();
     const description = String(formData.get('description')).trim();
     const price = Number(formData.get('price'));
-    const total = Number(formData.get('total'));
-    const available = Number(formData.get('available'));
+    const cleaningStockCount = Number(formData.get('cleaningStockCount'));
+    const total = catalogMode === 'cleaning' ? cleaningStockCount : Number(formData.get('total'));
+    const available = catalogMode === 'cleaning'
+        ? (editingProduct && Number(editingProduct.available) === 0 ? 0 : cleaningStockCount)
+        : Number(formData.get('available'));
     const file = imageInput.files[0];
 
-    if (!Number.isFinite(price) || price < 0 || total < 0 || available < 0 || available > total) {
+    if (!Number.isFinite(price) || price < 0 || !Number.isInteger(total) || total < 0 || available < 0 || available > total) {
         setStatus(formStatus, 'Check the price and stock values. Available stock cannot exceed total stock.', 'error');
         return;
     }
@@ -251,11 +289,14 @@ function setCatalogMode(mode) {
     rentalTab.classList.toggle('active', !cleaning);
     cleaningTab.classList.toggle('active', cleaning);
     usersTab.classList.remove('active');
+    deliveryTab.classList.remove('active');
     rentalTab.setAttribute('aria-selected', String(!cleaning));
     cleaningTab.setAttribute('aria-selected', String(cleaning));
     usersTab.setAttribute('aria-selected', 'false');
+    deliveryTab.setAttribute('aria-selected', 'false');
     catalogPanel.classList.remove('hidden');
     usersPanel.classList.add('hidden');
+    deliveryPanel.classList.add('hidden');
     priceField.classList.remove('hidden');
     priceInput.required = true;
     document.getElementById('catalog-eyebrow').textContent = cleaning ? 'CLEANING PRODUCT STORE' : 'RENTAL INVENTORY';
@@ -360,12 +401,59 @@ function showUsers() {
     rentalTab.classList.remove('active');
     cleaningTab.classList.remove('active');
     usersTab.classList.add('active');
+    deliveryTab.classList.remove('active');
     rentalTab.setAttribute('aria-selected', 'false');
     cleaningTab.setAttribute('aria-selected', 'false');
     usersTab.setAttribute('aria-selected', 'true');
+    deliveryTab.setAttribute('aria-selected', 'false');
     catalogPanel.classList.add('hidden');
     usersPanel.classList.remove('hidden');
+    deliveryPanel.classList.add('hidden');
     loadUsers().catch(error => setStatus(userStatus, error.message || 'Could not load users.', 'error'));
+}
+
+async function toggleCleaningStock(product) {
+    const nextAvailable = product.available > 0 ? 0 : 1;
+    const { error } = await supabaseClient.from('store_products').update({
+        total: Math.max(Number(product.total) || 1, 1),
+        available: nextAvailable
+    }).eq('id', product.id);
+    if (error) { setStatus(formStatus, error.message || 'Could not update stock status.', 'error'); return; }
+    await loadProducts();
+}
+
+async function updateCleaningQuantity(product, input) {
+    const quantity = Number(input.value);
+    if (!Number.isInteger(quantity) || quantity < 0) {
+        input.value = String(product.total);
+        setStatus(formStatus, 'Enter a whole quantity of zero or more.', 'error');
+        return;
+    }
+    input.disabled = true;
+    const { error } = await supabaseClient.from('store_products').update({
+        total: quantity,
+        available: product.available > 0 ? quantity : 0
+    }).eq('id', product.id);
+    input.disabled = false;
+    if (error) {
+        input.value = String(product.total);
+        setStatus(formStatus, error.message || 'Could not update the in-stock quantity.', 'error');
+        return;
+    }
+    await loadProducts();
+    setStatus(formStatus, `${product.name} stock quantity updated.`, 'success');
+}
+
+async function showDeliveryAreas() {
+    [rentalTab, cleaningTab, usersTab].forEach(tab => { tab.classList.remove('active'); tab.setAttribute('aria-selected', 'false'); });
+    deliveryTab.classList.add('active'); deliveryTab.setAttribute('aria-selected', 'true');
+    catalogPanel.classList.add('hidden'); usersPanel.classList.add('hidden'); deliveryPanel.classList.remove('hidden');
+    const status = document.getElementById('delivery-status');
+    setStatus(status, 'Loading areas...');
+    const { data, error } = await supabaseClient.from('delivery_areas').select('name, cash_on_delivery').order('name');
+    if (error) { setStatus(status, error.message, 'error'); return; }
+    document.getElementById('delivery-area-list').value = (data || []).map(area => `${area.name} | ${area.cash_on_delivery ? 'COD' : 'online'}`).join('\n');
+    setStatus(status, `${(data || []).length} delivery locations`);
 }
 
 async function handleSession(session) {
@@ -408,6 +496,19 @@ if (!supabaseClient) {
     rentalTab.addEventListener('click', () => setCatalogMode('rental'));
     cleaningTab.addEventListener('click', () => setCatalogMode('cleaning'));
     usersTab.addEventListener('click', showUsers);
+    deliveryTab.addEventListener('click', () => showDeliveryAreas().catch(error => setStatus(document.getElementById('delivery-status'), error.message, 'error')));
+    document.getElementById('delivery-area-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        const status = document.getElementById('delivery-status');
+        const areas = document.getElementById('delivery-area-list').value.split(/\r?\n/).map(line => {
+            const [name, mode = 'online'] = line.split('|');
+            return { name: name.trim(), cash_on_delivery: mode.trim().toLowerCase() === 'cod', is_active: true };
+        }).filter(area => area.name);
+        const { error: clearError } = await supabaseClient.from('delivery_areas').delete().neq('name', '__none__');
+        if (clearError) { setStatus(status, clearError.message, 'error'); return; }
+        if (areas.length) { const { error } = await supabaseClient.from('delivery_areas').insert(areas); if (error) { setStatus(status, error.message, 'error'); return; } }
+        setStatus(status, 'Delivery areas saved.', 'success');
+    });
     imageInput.addEventListener('change', () => showImagePreview(imageInput.files[0]));
     cancelEditButton.addEventListener('click', resetProductForm);
     document.getElementById('refresh-products').addEventListener('click', () => loadProducts().catch(error => {

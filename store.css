@@ -82,6 +82,14 @@
 .checkout-button:hover { background: #1d6239; }
 .checkout-button:disabled { background: #dfe4dc; color: #768076; cursor: not-allowed; }
 .checkout-note { margin: 9px 0 0; color: #69756d; font-size: 11px; text-align: center; }
+.remove-item { width: auto !important; padding: 0 7px; color: #a32e26 !important; font-size: 11px; }
+.billing-form { display: grid; gap: 8px; padding-top: 14px; }
+.billing-form > label { color: #344239; font-size: 12px; font-weight: 600; }
+.billing-form input:not([type="radio"]), .billing-form select, .billing-form textarea { box-sizing: border-box; width: 100%; min-height: 40px; padding: 9px 10px; border: 1px solid #d3d9d0; border-radius: 3px; font: inherit; }
+.billing-form fieldset { display: grid; gap: 8px; margin: 8px 0; padding: 12px; border: 1px solid #dce1d9; }
+.billing-form fieldset label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.billing-form fieldset legend { padding: 0 5px; font-size: 13px; font-weight: 600; }
+.billing-form .cart-total { margin: 8px 0; font-weight: 600; }
 
 @media (max-width: 1000px) {
     .store-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
