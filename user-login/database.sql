@@ -140,11 +140,12 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = ''
+set search_path = pg_catalog
 as $$
   select exists (
-    select 1 from public.admin_users
-    where user_id = (select auth.uid())
+    select 1
+    from public.admin_users as administrators
+    where administrators.user_id = auth.uid()
   );
 $$;
 
@@ -494,4 +495,8 @@ revoke all on public.admin_user_details from public, anon, authenticated;
 
 -- Sign-in and registration use Supabase Auth in auth.users.
 -- After registering the first admin, approve that account once as project owner:
--- insert into public.admin_users (user_id) values ('YOUR_AUTH_USER_UUID') on conflict do nothing;
+-- Replace the email below with the email used to sign in, then run this once
+-- in Supabase SQL Editor as project owner. Do not expose this SQL through the app.
+-- insert into public.admin_users (user_id)
+-- select id from auth.users where lower(email) = lower('admin@example.com')
+-- on conflict (user_id) do nothing;

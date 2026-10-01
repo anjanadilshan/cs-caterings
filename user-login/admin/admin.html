@@ -42,6 +42,7 @@
                 <button id="cleaning-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Cleaning products</button>
                 <button id="users-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Users</button>
                 <button id="delivery-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Delivery areas</button>
+                <button id="events-tab" class="catalog-tab" type="button" role="tab" aria-selected="false">Events <span id="event-count" class="tab-count">0</span></button>
             </div>
 
             <div id="catalog-panel" class="admin-columns">
@@ -124,7 +125,18 @@
                 <p class="field-hint">Add one area per line as: Area name | COD (or online). These locations appear at checkout.</p>
                 <form id="delivery-area-form" class="admin-form"><label for="delivery-area-list">Areas</label><textarea id="delivery-area-list" rows="8" placeholder="Colombo | COD\nKandy | online"></textarea><button class="admin-primary" type="submit">Save delivery areas</button><p id="delivery-status" class="admin-status" role="status"></p></form>
             </section>
-        </section>
+            <section id="events-panel" class="admin-panel events-panel hidden">
+                <div class="panel-heading">
+                    <div><p class="admin-eyebrow">CUSTOMER BOOKINGS</p><h2>Requested events <span id="events-total" class="count-badge">0</span></h2></div>
+                    <button id="refresh-events" class="icon-button" type="button" aria-label="Refresh requested events" title="Refresh requested events"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+                <div class="event-view-tabs" role="tablist" aria-label="Filter event bookings">
+                    <button id="pending-events-view" class="event-view-tab active" type="button" role="tab" aria-selected="true">Pending <span id="pending-event-count" class="tab-count">0</span></button>
+                    <button id="approved-events-view" class="event-view-tab" type="button" role="tab" aria-selected="false">Approved <span id="approved-event-count" class="tab-count">0</span></button>
+                </div>
+                <p id="events-status" class="admin-status" role="status" aria-live="polite">Booking requests are visible to administrators only.</p>
+                <div id="admin-event-list" class="admin-event-list" aria-live="polite"></div>
+            </section></section>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

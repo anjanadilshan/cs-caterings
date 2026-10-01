@@ -15,9 +15,11 @@ const rentalTab = document.getElementById('rental-tab');
 const cleaningTab = document.getElementById('cleaning-tab');
 const usersTab = document.getElementById('users-tab');
 const deliveryTab = document.getElementById('delivery-tab');
+const eventsTab = document.getElementById('events-tab');
 const deliveryPanel = document.getElementById('delivery-panel');
 const catalogPanel = document.getElementById('catalog-panel');
 const usersPanel = document.getElementById('users-panel');
+const eventsPanel = document.getElementById('events-panel');
 const userList = document.getElementById('admin-user-list');
 const userCount = document.getElementById('user-count');
 const userStatus = document.getElementById('user-status');
@@ -25,6 +27,8 @@ const priceField = document.getElementById('price-field');
 const priceInput = document.getElementById('product-price');
 let products = [];
 let users = [];
+let eventBookings = [];
+let eventView = 'pending';
 let editingProduct = null;
 let previewUrl = '';
 let catalogMode = 'rental';
@@ -140,8 +144,8 @@ function renderProducts() {
         name.textContent = product.name;
         const stock = document.createElement('p');
         stock.textContent = catalogMode === 'cleaning'
-            ? `${product.available > 0 ? `${product.available} in stock` : 'Out of stock'} · ${product.is_active ? 'Visible' : 'Hidden'}`
-            : `${product.available} available of ${product.total} · ${product.is_active ? 'Visible' : 'Hidden'}`;
+            ? `${product.available > 0 ? `${product.available} in stock` : 'Out of stock'} Â· ${product.is_active ? 'Visible' : 'Hidden'}`
+            : `${product.available} available of ${product.total} Â· ${product.is_active ? 'Visible' : 'Hidden'}`;
         info.append(name, stock);
         const price = document.createElement('p');
         price.className = 'admin-product-price';
@@ -290,13 +294,16 @@ function setCatalogMode(mode) {
     cleaningTab.classList.toggle('active', cleaning);
     usersTab.classList.remove('active');
     deliveryTab.classList.remove('active');
+    eventsTab.classList.remove('active');
     rentalTab.setAttribute('aria-selected', String(!cleaning));
     cleaningTab.setAttribute('aria-selected', String(cleaning));
     usersTab.setAttribute('aria-selected', 'false');
     deliveryTab.setAttribute('aria-selected', 'false');
+    eventsTab.setAttribute('aria-selected', 'false');
     catalogPanel.classList.remove('hidden');
     usersPanel.classList.add('hidden');
     deliveryPanel.classList.add('hidden');
+    eventsPanel.classList.add('hidden');
     priceField.classList.remove('hidden');
     priceInput.required = true;
     document.getElementById('catalog-eyebrow').textContent = cleaning ? 'CLEANING PRODUCT STORE' : 'RENTAL INVENTORY';
@@ -402,14 +409,252 @@ function showUsers() {
     cleaningTab.classList.remove('active');
     usersTab.classList.add('active');
     deliveryTab.classList.remove('active');
+    eventsTab.classList.remove('active');
     rentalTab.setAttribute('aria-selected', 'false');
     cleaningTab.setAttribute('aria-selected', 'false');
     usersTab.setAttribute('aria-selected', 'true');
     deliveryTab.setAttribute('aria-selected', 'false');
+    eventsTab.setAttribute('aria-selected', 'false');
     catalogPanel.classList.add('hidden');
     usersPanel.classList.remove('hidden');
     deliveryPanel.classList.add('hidden');
+    eventsPanel.classList.add('hidden');
     loadUsers().catch(error => setStatus(userStatus, error.message || 'Could not load users.', 'error'));
+}
+
+function formatEventDate(date) {
+    if (!date) return 'Not provided';
+    const parsed = new Date(`${date}T00:00:00`);
+    return Number.isNaN(parsed.getTime()) ? date : new Intl.DateTimeFormat('en', { dateStyle: 'long' }).format(parsed);
+}
+
+function addEventDetail(container, heading, lines) {
+    const section = document.createElement('section');
+    section.className = 'event-detail-section';
+    const title = document.createElement('h4');
+    title.textContent = heading;
+    section.append(title);
+    const list = document.createElement('dl');
+    lines.forEach(([label, content]) => {
+        const row = document.createElement('div');
+        row.className = 'event-detail-row';
+        const term = document.createElement('dt');
+        term.textContent = label;
+        const description = document.createElement('dd');
+        description.textContent = content || '\u2014';
+        row.append(term, description);
+        list.append(row);
+    });
+    section.append(list);
+    container.append(section);
+}
+
+function renderRequestedEvents() {
+    const host = document.getElementById('admin-event-list');
+    host.replaceChildren();
+    const pendingStatuses = new Set(['pending', 'under_review', 'quoted']);
+    const approvedStatuses = new Set(['confirmed', 'in_progress', 'completed']);
+    const pending = eventBookings.filter(booking => pendingStatuses.has(booking.status));
+    const approved = eventBookings.filter(booking => approvedStatuses.has(booking.status));
+    document.getElementById('event-count').textContent = String(pending.length + approved.length);
+    document.getElementById('pending-event-count').textContent = String(pending.length);
+    document.getElementById('approved-event-count').textContent = String(approved.length);
+    const bookings = (eventView === 'pending' ? pending : approved).sort((a, b) => {
+        if (eventView === 'pending') {
+            return new Date(a.created_at) - new Date(b.created_at);
+        }
+        return String(a.event_date).localeCompare(String(b.event_date))
+            || new Date(a.created_at) - new Date(b.created_at);
+    });
+    document.getElementById('events-total').textContent = String(bookings.length);
+    if (!bookings.length) {
+        const empty = document.createElement('p');
+        empty.className = 'admin-empty';
+        empty.textContent = eventView === 'pending'
+            ? 'There are no pending event requests.'
+            : 'There are no approved events yet.';
+        host.append(empty);
+        return;
+    }
+
+    bookings.forEach(booking => {
+        const card = document.createElement('article');
+        card.className = 'admin-event-card';
+        const header = document.createElement('div');
+        header.className = 'admin-event-header';
+        const headingWrap = document.createElement('div');
+        const title = document.createElement('h3');
+        title.textContent = `${booking.event_type} \u00B7 ${booking.booking_reference || "Booking request"}`;
+        const meta = document.createElement('p');
+        meta.className = 'event-meta';
+        meta.textContent = `${formatEventDate(booking.event_date)} \u00B7 ${booking.guest_count} guests`;
+        headingWrap.append(title, meta);
+        const badge = document.createElement('span');
+        badge.className = `event-status-badge status-${booking.status}`;
+        badge.textContent = String(booking.status || 'pending').replaceAll('_', ' ');
+        header.append(headingWrap, badge);
+        card.append(header);
+        const detailGrid = document.createElement('div');
+        detailGrid.className = 'event-details-grid';
+        card.append(detailGrid);
+
+        addEventDetail(detailGrid, 'Customer', [
+            ['Name', booking.customer_name], ['Email', booking.customer_email],
+            ['Phone', booking.customer_phone], ['Alternative phone', booking.alternative_phone],
+            ['Preferred contact', booking.preferred_contact_method]
+        ]);
+        addEventDetail(detailGrid, 'Event', [
+            ['Type', booking.event_type], ['Date', formatEventDate(booking.event_date)],
+            ["Time", [booking.start_time, booking.end_time].filter(Boolean).join(" \u2013 ") || "Not specified"],
+            ['Guests', String(booking.guest_count)], ['Venue', booking.venue_name]
+        ]);
+        addEventDetail(detailGrid, 'Location', [
+            ['District', booking.district], ['Address', booking.event_address],
+            ['Instructions', booking.location_instructions]
+        ]);
+        addEventDetail(detailGrid, 'Catering requirements', [
+            ['Dietary requirements', (booking.booking_dietary_requirements || []).map(item => item.requirement).join(', ') || 'None provided']
+        ]);
+
+        const rentalLines = (booking.booking_rental_items || []).map(item => {
+            const rental = Array.isArray(item.rental_items) ? item.rental_items[0] : item.rental_items;
+            return `${rental?.name || `Rental item #${item.rental_item_id}`} \u00D7 ${item.quantity} \u00B7 LKR ${Number(item.unit_price).toLocaleString("en-LK")} each`;
+        });
+        addEventDetail(detailGrid, 'Rental items', [['Selected rentals', rentalLines.join('\n') || 'None selected']]);
+        addEventDetail(detailGrid, 'Budget & notes', [
+            ['Estimated budget', booking.estimated_budget == null ? 'Not provided' : `LKR ${Number(booking.estimated_budget).toLocaleString('en-LK')}`],
+            ['Estimated non-catering total', booking.estimated_total == null ? 'Not available' : `LKR ${Number(booking.estimated_total).toLocaleString('en-LK')}`],
+            ['Additional requirements', booking.additional_requirements],
+            ["Submitted", booking.created_at ? new Date(booking.created_at).toLocaleString() : "\u2014"]
+        ]);
+
+        const actions = document.createElement('div');
+        actions.className = 'admin-event-actions';
+        if (booking.status === 'pending' || booking.status === 'under_review' || booking.status === 'quoted') {
+            const approve = document.createElement('button');
+            approve.type = 'button';
+            approve.className = 'admin-primary';
+            approve.textContent = 'Approve & confirm booking';
+            approve.addEventListener('click', () => approveEventBooking(booking, approve));
+            actions.append(approve);
+        }
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'delete-user';
+        remove.textContent = 'Delete booking';
+        remove.addEventListener('click', () => deleteEventBooking(booking, remove));
+        actions.append(remove);
+        card.append(actions);
+        host.append(card);
+    });
+}
+
+async function loadRequestedEvents() {
+    const status = document.getElementById('events-status');
+    const host = document.getElementById('admin-event-list');
+    host.replaceChildren();
+    setStatus(status, 'Loading requested events...');
+    const { data, error } = await supabaseClient
+        .from('event_bookings')
+        .select('id,booking_reference,user_id,customer_name,customer_email,customer_phone,alternative_phone,preferred_contact_method,event_type,event_date,start_time,end_time,guest_count,venue_name,district,event_address,location_instructions,estimated_budget,estimated_total,additional_requirements,status,created_at,updated_at,booking_rental_items(rental_item_id,quantity,unit_price,rental_items(name)),booking_dietary_requirements(requirement)')
+        .order('created_at', { ascending: false });
+    if (error) {
+        console.error('Could not load requested events:', error);
+        setStatus(status, 'Could not load booking requests. Check the event booking tables and admin RLS policies.', 'error');
+        return;
+    }
+    eventBookings = data || [];
+    renderRequestedEvents();
+    const pendingCount = eventBookings.filter(booking => ['pending', 'under_review', 'quoted'].includes(booking.status)).length;
+    const approvedCount = eventBookings.filter(booking => ['confirmed', 'in_progress', 'completed'].includes(booking.status)).length;
+    setStatus(status, `${pendingCount} pending request${pendingCount === 1 ? "" : "s"} \u00B7 ${approvedCount} approved event${approvedCount === 1 ? "" : "s"}.`);
+}
+
+async function loadEventCounts() {
+    const relevantStatuses = ['pending', 'under_review', 'quoted', 'confirmed', 'in_progress', 'completed'];
+    const { count, error } = await supabaseClient
+        .from('event_bookings')
+        .select('id', { count: 'exact', head: true })
+        .in('status', relevantStatuses);
+    if (error) {
+        console.warn('Could not load event count:', error);
+        return;
+    }
+    document.getElementById('event-count').textContent = String(count || 0);
+}
+
+async function approveEventBooking(booking, button) {
+    if (!window.confirm(`Approve and confirm booking ${booking.booking_reference || ''} for ${booking.customer_name}?`)) return;
+    button.disabled = true;
+    button.textContent = 'Approving...';
+    const status = document.getElementById('events-status');
+    try {
+        const { data, error } = await supabaseClient
+            .from('event_bookings')
+            .update({ status: 'confirmed' })
+            .eq('id', booking.id)
+            .in('status', ['pending', 'under_review', 'quoted'])
+            .select('id')
+            .maybeSingle();
+        if (error) throw error;
+        if (!data) throw new Error('This booking was already updated. Refresh the list to see its current status.');
+        setStatus(status, `${booking.booking_reference || 'Booking'} approved and confirmed.`, 'success');
+        await loadRequestedEvents();
+    } catch (error) {
+        console.error('Could not approve booking:', error);
+        setStatus(status, error.message || 'Could not approve this booking.', 'error');
+        button.disabled = false;
+        button.textContent = 'Approve & confirm booking';
+    }
+}
+
+async function deleteEventBooking(booking, button) {
+    const reference = booking.booking_reference || 'this booking';
+    if (!window.confirm(`Permanently delete ${reference} for ${booking.customer_name}? Its linked rental, service, dietary, quotation, and note records will also be deleted.`)) return;
+    button.disabled = true;
+    button.textContent = 'Deleting...';
+    const status = document.getElementById('events-status');
+    try {
+        const { data, error } = await supabaseClient
+            .from('event_bookings')
+            .delete()
+            .eq('id', booking.id)
+            .select('id')
+            .maybeSingle();
+        if (error) throw error;
+        if (!data) throw new Error('The booking was not deleted. It may already have been removed or you may not have permission.');
+        setStatus(status, `${reference} deleted.`, 'success');
+        await loadRequestedEvents();
+    } catch (error) {
+        console.error('Could not delete event booking:', error);
+        setStatus(status, error.message || 'Could not delete this booking.', 'error');
+        button.disabled = false;
+        button.textContent = 'Delete booking';
+    }
+}
+
+function showRequestedEvents() {
+    [rentalTab, cleaningTab, usersTab, deliveryTab, eventsTab].forEach(tab => {
+        const active = tab === eventsTab;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+    });
+    catalogPanel.classList.add('hidden');
+    usersPanel.classList.add('hidden');
+    deliveryPanel.classList.add('hidden');
+    eventsPanel.classList.remove('hidden');
+    loadRequestedEvents();
+}
+
+function setEventView(view) {
+    eventView = view;
+    const pendingButton = document.getElementById('pending-events-view');
+    const approvedButton = document.getElementById('approved-events-view');
+    pendingButton.classList.toggle('active', view === 'pending');
+    approvedButton.classList.toggle('active', view === 'approved');
+    pendingButton.setAttribute('aria-selected', String(view === 'pending'));
+    approvedButton.setAttribute('aria-selected', String(view === 'approved'));
+    renderRequestedEvents();
 }
 
 async function toggleCleaningStock(product) {
@@ -445,9 +690,9 @@ async function updateCleaningQuantity(product, input) {
 }
 
 async function showDeliveryAreas() {
-    [rentalTab, cleaningTab, usersTab].forEach(tab => { tab.classList.remove('active'); tab.setAttribute('aria-selected', 'false'); });
+    [rentalTab, cleaningTab, usersTab, eventsTab].forEach(tab => { tab.classList.remove('active'); tab.setAttribute('aria-selected', 'false'); });
     deliveryTab.classList.add('active'); deliveryTab.setAttribute('aria-selected', 'true');
-    catalogPanel.classList.add('hidden'); usersPanel.classList.add('hidden'); deliveryPanel.classList.remove('hidden');
+    catalogPanel.classList.add('hidden'); usersPanel.classList.add('hidden'); eventsPanel.classList.add('hidden'); deliveryPanel.classList.remove('hidden');
     const status = document.getElementById('delivery-status');
     setStatus(status, 'Loading areas...');
     const { data, error } = await supabaseClient.from('delivery_areas').select('name, cash_on_delivery').order('name');
@@ -481,6 +726,7 @@ async function handleSession(session) {
     currentAdminId = user.id;
     accountLabel.textContent = user.email || 'Administrator';
     await loadProducts();
+    loadEventCounts();
 }
 
 async function signOut() {
@@ -498,6 +744,10 @@ if (!supabaseClient) {
     cleaningTab.addEventListener('click', () => setCatalogMode('cleaning'));
     usersTab.addEventListener('click', showUsers);
     deliveryTab.addEventListener('click', () => showDeliveryAreas().catch(error => setStatus(document.getElementById('delivery-status'), error.message, 'error')));
+    eventsTab.addEventListener('click', showRequestedEvents);
+    document.getElementById('pending-events-view').addEventListener('click', () => setEventView('pending'));
+    document.getElementById('approved-events-view').addEventListener('click', () => setEventView('approved'));
+    document.getElementById('refresh-events').addEventListener('click', () => loadRequestedEvents());
     document.getElementById('delivery-area-form').addEventListener('submit', async event => {
         event.preventDefault();
         const status = document.getElementById('delivery-status');
