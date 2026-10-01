@@ -449,9 +449,13 @@ function addEventDetail(container, heading, lines) {
     container.append(section);
 }
 
-function printEventBill(booking) {
+async function printEventBill(booking) {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
+    const { data: owner } = await supabaseClient.from('profiles')
+        .select('full_name, phone_number')
+        .eq('id', currentAdminId)
+        .maybeSingle();
     const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[character]);
@@ -466,7 +470,7 @@ function printEventBill(booking) {
     const reference = booking.booking_reference || 'Booking request';
     printWindow.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Bill ${escape(reference)}</title><style>
         body{font:14px Arial,sans-serif;color:#222;margin:36px}header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #b8942f;padding-bottom:16px}h1{font-size:24px;margin:0 0 6px}h2{font-size:17px;margin:24px 0 10px}.muted{color:#666}.meta{text-align:right}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{padding:10px 8px;border-bottom:1px solid #ddd;text-align:left}th{background:#f4f1e8}td:nth-child(n+2),th:nth-child(n+2){text-align:right}.total{text-align:right;font-size:18px;font-weight:bold;margin-top:16px}.note{margin-top:24px;padding:12px;background:#f6f3e9;color:#555;font-size:12px}.details{line-height:1.7}@media print{body{margin:18mm}}
-        </style></head><body><header><div><h1>CS Catering</h1><div class="muted">Event booking bill</div></div><div class="meta"><strong>${escape(reference)}</strong><br>${escape(String(booking.status || 'pending').replaceAll('_', ' '))}<br>${escape(new Date().toLocaleDateString())}</div></header>
+        </style></head><body><header><div><h1>CS Catering</h1><div>${escape(owner?.full_name || 'Owner')}</div><div class="muted">${escape(owner?.phone_number || 'Phone number not set')}</div><div class="muted">Event booking bill</div></div><div class="meta"><strong>${escape(reference)}</strong><br>${escape(String(booking.status || 'pending').replaceAll('_', ' '))}<br>${escape(new Date().toLocaleDateString())}</div></header>
         <h2>Customer &amp; event</h2><div class="details"><strong>${escape(booking.customer_name)}</strong><br>${escape(booking.customer_email)} · ${escape(booking.customer_phone)}<br>${escape(booking.event_type)} · ${escape(formatEventDate(booking.event_date))} · ${escape(booking.guest_count)} guests<br>${escape(booking.venue_name || booking.district || '')}</div>
         <h2>Rental items</h2><table><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${rentalRows}</tbody></table>
         <div class="total">Estimated total: ${booking.estimated_total == null ? 'Not available' : escape(money(booking.estimated_total))}</div>

@@ -12,6 +12,7 @@
   const selectedRentals = new Map();
   const formOptions = [];
   const formLayouts = {};
+  let shopDetails = null;
   let currentStep = 0;
   let signedInUser = null;
 
@@ -98,6 +99,13 @@
       label.append(checkbox, document.createTextNode(` ${option.label}`));
       dietaryHost.append(label);
     });
+  }
+  async function loadShopDetails() {
+    if (!client) return;
+    const { data, error } = await client.rpc('get_shop_owner_details');
+    if (error) { console.warn('Could not load shop owner details:', error); return; }
+    shopDetails = Array.isArray(data) ? data[0] : data;
+    if (currentStep === 5) renderSummary();
   }
   function fieldLabelNode(field) {
     const section = steps[field.step - 1];
@@ -263,6 +271,12 @@
     const billHost = document.getElementById('bookingBill');
     billHost.replaceChildren();
     billHost.append(Object.assign(document.createElement('h3'), { textContent: 'Estimated bill' }));
+    if (shopDetails) {
+      const shop = document.createElement('p');
+      shop.className = 'bill-shop-details';
+      shop.textContent = [shopDetails.owner_name, shopDetails.phone_number].filter(Boolean).join(' · ');
+      if (shop.textContent) billHost.append(shop);
+    }
     const exclusionNote=document.createElement('p');exclusionNote.className='bill-note';exclusionNote.textContent='This estimate includes selected rental items only. Catering and food costs are excluded.';billHost.append(exclusionNote);
     bill.rows.forEach(([label, amount]) => {
       const row = document.createElement('div'); row.className = 'bill-row';
@@ -317,7 +331,7 @@
   form.elements.event_date.addEventListener('change', () => { form.elements.event_date.min = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10); });
   if (!client) message('Supabase could not be initialized. Reload the page or contact the site administrator.');
   if(isAdminPreview)showStep(0);
-  Promise.allSettled([loadProfile().catch(error => console.warn('Profile lookup failed:', error)), loadRentals(), loadFormOptions(), loadFormLayouts()]).then(()=>{
+  Promise.allSettled([loadProfile().catch(error => console.warn('Profile lookup failed:', error)), loadRentals(), loadFormOptions(), loadFormLayouts(), loadShopDetails()]).then(()=>{
     if(isAdminPreview&&window.parent!==window)window.parent.postMessage({type:'cs-customer-preview-ready'},location.origin);
   });
 })();
