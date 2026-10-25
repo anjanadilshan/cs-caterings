@@ -117,8 +117,8 @@ img, video { max-width: 100%; }
 /* --- HOME HERO SECTION --- */
 .hero {
     height: 90vh;
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1500');
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url('hero-image.png');
     background-size: cover;
     background-position: center;
     display: flex;
