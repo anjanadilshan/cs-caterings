@@ -361,7 +361,7 @@ body {
 .about-hero {
     height: 60vh;
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('hero-image.png');
+                url('https://www.caterops.in/wedding-catering-buffet-setup-large-event.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -658,7 +658,7 @@ body {
 .menu-hero {
     text-align: center;
     padding: 80px 20px;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('hero-image.png');
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://image-tc.galaxy.tf/wijpeg-1yngltyhnqtnotgnckn9bofpb/7i5a4330-1.jpg?width=1920');
     background-size: cover;
     background-position: center;
 }
