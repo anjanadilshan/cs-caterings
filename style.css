@@ -361,7 +361,7 @@ body {
 .about-hero {
     height: 60vh;
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&q=80&w=1200');
+                url('hero-image.png');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -658,7 +658,7 @@ body {
 .menu-hero {
     text-align: center;
     padding: 80px 20px;
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1200');
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('hero-image.png');
     background-size: cover;
     background-position: center;
 }
