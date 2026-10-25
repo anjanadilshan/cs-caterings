@@ -61,12 +61,13 @@ header {
 }
 
 .nav-btn span {
-    max-width: 0; overflow: hidden; opacity: 0;
-    transition: all 0.4s ease;
+    max-width: 180px; overflow: visible; opacity: 1;
+    margin-left: 8px; white-space: nowrap;
+    transition: color 0.4s ease;
 }
 
 .nav-btn:hover span, .nav-btn.active span {
-    max-width: 100px; margin-left: 8px; opacity: 1;
+    max-width: 180px; margin-left: 8px; opacity: 1;
 }
 
 .nav-btn:hover, .nav-btn.active {
@@ -118,7 +119,7 @@ img, video { max-width: 100%; }
 .hero {
     height: 90vh;
     background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-                url('hero-image.png');
+                url('images/hero-image.png');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -361,7 +362,7 @@ body {
 .about-hero {
     height: 60vh;
     background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('about-hero.png');
+                url('images/about-hero.png');
     background-size: cover;
     background-position: center;
     display: flex;

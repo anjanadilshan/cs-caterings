@@ -1,4 +1,4 @@
-﻿(() => {
+(() => {
   const client = window.csSupabase;
   const message = document.getElementById('requestsMessage');
   const host = document.getElementById('requestList');

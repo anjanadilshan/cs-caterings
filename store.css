@@ -115,7 +115,7 @@
     .store-page header { padding: 12px; }
     .store-brand { font-size: 16px; }
     .store-page .nav-btn { padding: 9px 10px; }
-    .store-page .nav-btn span { display: none; }
+    .store-page .nav-btn span { display: inline; }
     .store-product-grid { grid-template-columns: 1fr; }
     .store-product-card { display: grid; grid-template-columns: 38% minmax(0, 1fr); }
     .store-product-photo { height: 100%; min-height: 180px; aspect-ratio: auto; }
